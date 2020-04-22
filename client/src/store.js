@@ -1,8 +1,10 @@
-import { configureStore } from '@reduxjs/toolkit';
-import gameReducer from '../../client/src/components/game/gameSlice';
+import { configureStore } from '@reduxjs/toolkit'
+import gameReducer from './components/game/gameSlice'
+import industryReducer from './components/game/components/industry/industrySlice'
 
 export default configureStore({
   reducer: {
-    game: gameReducer
+    game: gameReducer,
+    industry: industryReducer
   }
-});
+})

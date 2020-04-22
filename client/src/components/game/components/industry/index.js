@@ -1,10 +1,14 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import { incIndustryIncome } from './industrySlice'
 import './industry.css'
 
-export default class Industry extends Component {
+class Industry extends Component {
     static propTypes = {
-        industry: PropTypes.object.isRequired
+        industry: PropTypes.object.isRequired,
+        isBuyClicked: PropTypes.bool.isRequired,
+        incIndustryIncome: PropTypes.func.isRequired
     }
 
     handleUpgrade = (e) => {
@@ -12,7 +16,12 @@ export default class Industry extends Component {
     }
 
     handleBuy = (e) => {
-        console.log('clicked buy')
+        if (!this.props.isBuyClicked) {
+            this.props.incIndustryIncome(
+                this.props.industry.income,
+                this.props.industry.wait
+            )
+        }
     }
 
     render() {
@@ -39,3 +48,13 @@ export default class Industry extends Component {
         )
     }
 }
+
+const mapStateToProps = state => ({
+    isBuyClicked: state.industry.isBuyClicked
+})
+
+const mapDispatchToProps = {
+    incIndustryIncome
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Industry)

@@ -1,11 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit'
-import industries from '../../db'
 
 export const gameSlice = createSlice({
     name: 'game',
     initialState: {
-        antimatter: 0,
-        industries,
+        antimatter: 0
     },
     reducers: {
         incAntimatter: (state, action) => {

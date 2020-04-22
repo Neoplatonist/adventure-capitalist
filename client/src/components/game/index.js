@@ -52,7 +52,7 @@ class Game extends Component {
 
 const mapStateToProps = state => ({
     antimatter: selectAntiMatter(state),
-    industries: state.game.industries
+    industries: state.industry.industries
 })
 
 export default connect(mapStateToProps, null)(Game)

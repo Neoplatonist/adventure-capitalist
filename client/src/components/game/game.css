@@ -1,0 +1,25 @@
+#game-menu {
+    grid-column: col1-start;
+    grid-row: row1-start / row7-end;
+    background-color: green;
+}
+
+#game-header {
+    grid-column: col2-start / col3-end;
+    grid-row: row1-start / row2-start;
+    background-color: indianred;
+}
+
+#game-industries {
+    text-align: center;
+    grid-column: col2-start / col3-end;
+    grid-row: row2-start / row7-end;
+    background-color: lightblue;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+#game-industries>* {
+    flex: 1 1 0;
+}

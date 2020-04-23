@@ -1,4 +1,4 @@
-export default [
+export const industries = [
     {
         name: 'Farmland',
         income: 1,
@@ -8,7 +8,8 @@ export default [
         numberOwned: 1,
         manager: false,
         wait: 1000,
-        unlocked: true
+        unlocked: true,
+        isContribLocked: false
     },
     {
         name: 'Mineral Extractor',
@@ -19,7 +20,8 @@ export default [
         numberOwned: 1,
         manager: false,
         wait: 3000,
-        unlocked: false
+        unlocked: false,
+        isContribLocked: false
     },
     {
         name: 'Particle Generator',
@@ -30,7 +32,8 @@ export default [
         numberOwned: 1,
         manager: false,
         wait: 6000,
-        unlocked: false
+        unlocked: false,
+        isContribLocked: false
     },
     {
         name: 'Trading Post',
@@ -41,7 +44,8 @@ export default [
         numberOwned: 1,
         manager: false,
         wait: 12000,
-        unlocked: false
+        unlocked: false,
+        isContribLocked: false
     },
     {
         name: 'Academy',
@@ -52,7 +56,8 @@ export default [
         numberOwned: 1,
         manager: false,
         wait: 24000,
-        unlocked: false
+        unlocked: false,
+        isContribLocked: false
     },
     {
         name: 'Data Silo',
@@ -63,7 +68,8 @@ export default [
         numberOwned: 1,
         manager: false,
         wait: 48000,
-        unlocked: false
+        unlocked: false,
+        isContribLocked: false
     },
     {
         name: 'Labratory',
@@ -74,7 +80,8 @@ export default [
         numberOwned: 1,
         manager: false,
         wait: 96000,
-        unlocked: false
+        unlocked: false,
+        isContribLocked: false
     },
     {
         name: 'Colony',
@@ -85,7 +92,8 @@ export default [
         numberOwned: 1,
         manager: false,
         wait: 192000,
-        unlocked: false
+        unlocked: false,
+        isContribLocked: false
     },
     {
         name: 'Federation',
@@ -96,7 +104,8 @@ export default [
         numberOwned: 1,
         manager: false,
         wait: 384000,
-        unlocked: false
+        unlocked: false,
+        isContribLocked: false
     },
     {
         name: 'Galactic Expedition',
@@ -107,6 +116,8 @@ export default [
         numberOwned: 1,
         manager: false,
         wait: 768000,
-        unlocked: false
+        unlocked: false,
+        isContribLocked: false
     }
 ]
+

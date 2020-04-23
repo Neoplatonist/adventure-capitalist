@@ -18,7 +18,9 @@ class Game extends Component {
                 upgrade: PropTypes.number.isRequired,
                 numberOwned: PropTypes.number.isRequired,
                 manager: PropTypes.bool.isRequired,
-                wait: PropTypes.number.isRequired
+                wait: PropTypes.number.isRequired,
+                unlocked: PropTypes.bool.isRequired,
+                isContribLocked: PropTypes.bool.isRequired
             })
         ).isRequired
     }
@@ -32,10 +34,12 @@ class Game extends Component {
     }
 
     render() {
+        const { antimatter, industries } = this.props
+
         return (
             <Fragment>
                 <header id="game-header">
-                    {'Antimatter: ' + this.props.antimatter}
+                    {'Antimatter: ' + antimatter}
                 </header>
 
                 <aside id="game-menu">
@@ -43,7 +47,7 @@ class Game extends Component {
                 </aside>
 
                 <article id="game-industries">
-                    {this.getIndustries()}
+                    {industries.length === 0 ? 'Loading...' : this.getIndustries()}
                 </article>
             </Fragment>
         )

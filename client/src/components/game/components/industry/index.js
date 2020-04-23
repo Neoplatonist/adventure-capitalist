@@ -1,60 +1,73 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { incIndustryIncome } from './industrySlice'
+import { incIndustryContrib } from './industrySlice'
+// import { incAntimatterAsync } from '../../gameSlice'
+import Timer from '../timer'
 import './industry.css'
 
 class Industry extends Component {
     static propTypes = {
         industry: PropTypes.object.isRequired,
-        isBuyClicked: PropTypes.bool.isRequired,
-        incIndustryIncome: PropTypes.func.isRequired
+        incIndustryContrib: PropTypes.func.isRequired
     }
 
     handleUpgrade = (e) => {
-        console.log('clicked upgrade')
+        if (this.props.antimatter > this.props.industry.currentCost) {
+            this.props.buyIndustry()
+        }
     }
 
     handleBuy = (e) => {
-        if (!this.props.isBuyClicked) {
-            this.props.incIndustryIncome(
-                this.props.industry.income,
-                this.props.industry.wait
-            )
+        const { industry } = this.props
+
+        if (!industry.isContribLocked) {
+            this.props.incIndustryContrib(industry)
         }
     }
 
     render() {
+        const { industry } = this.props
+
         return (
             <section className="industry">
-                <p>{this.props.industry.name}</p>
+                <h4>{industry.name} x {industry.numberOwned}</h4>
 
                 <div className="stats">
-                    {'Income: ' + this.props.industry.income}
+                    <p>{'Income: ' + industry.income}</p>
+                    <p>
+                        <Timer
+                            isContribLocked={industry.isContribLocked}
+                            wait={industry.wait / 1000} />
+                    </p>
                 </div>
 
-                <button
-                    className="button"
-                    onClick={this.handleUpgrade}>
-                    Upgrade
-                </button>
+                <div className="btn-group">
+                    <button
+                        className="button"
+                        onClick={this.handleUpgrade}>
+                        Upgrade
+                    </button>
 
-                <button
-                    className="button"
-                    onClick={this.handleBuy}>
-                    Buy
-                </button>
+                    <button
+                        className="button"
+                        onClick={this.handleBuy}>
+                        Buy
+                    </button>
+                </div>
             </section >
         )
     }
 }
 
 const mapStateToProps = state => ({
-    isBuyClicked: state.industry.isBuyClicked
+    // isContribLocked: state.industry.isContribLocked
 })
 
 const mapDispatchToProps = {
-    incIndustryIncome
+    // incIndustryIncome
+    // incAntimatter
+    incIndustryContrib
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Industry)

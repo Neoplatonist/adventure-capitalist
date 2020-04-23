@@ -1,3 +1,19 @@
 .industry {
-    font-size: 1.4rem;
+    padding: 0.5rem 3rem;
+    font-size: 1.2rem;
+}
+
+.industry .stats {
+    margin: -1rem 0 1rem 0;
+    display: flex;
+    justify-content: space-around;
+}
+
+.industry .stats p {
+    margin: 0;
+    padding: 0;
+}
+
+.industry .button {
+    font-size: 1rem;
 }

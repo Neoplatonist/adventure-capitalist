@@ -1,33 +1,46 @@
-import industry, { toggleBuyClicked } from './industrySlice'
-import db from '../../../../db'
+import industry, { lockBuy, unlockBuy } from './industrySlice'
+import { industries } from '../../../../db'
 
 describe('industry reducer', () => {
     it('should handle initial state', () => {
-        expect(industry(undefined, {})).toEqual({
-            industries: db,
-            isBuyClicked: false
+        expect(industry(undefined, {})).toEqual({ industries })
+    })
+
+    it('should handle lockBuy', () => {
+        expect(
+            industry({
+                industries: [{
+                    name: 'Farmland',
+                    isContribLocked: false
+                }]
+            }, {
+                type: lockBuy.type,
+                payload: 'Farmland'
+            })
+        ).toEqual({
+            industries: [{
+                name: 'Farmland',
+                isContribLocked: true
+            }]
         })
     })
 
-    it('should handle toggleBuyClicked true', () => {
+    it('should handle unlockBuy', () => {
         expect(
-            industry({}, {
-                type: toggleBuyClicked.type,
-                payload: true
+            industry({
+                industries: [{
+                    name: 'Farmland',
+                    isContribLocked: true
+                }]
+            }, {
+                type: unlockBuy.type,
+                payload: 'Farmland'
             })
         ).toEqual({
-            isBuyClicked: true
-        })
-    })
-
-    it('should handle toggleBuyClicked false', () => {
-        expect(
-            industry({}, {
-                type: toggleBuyClicked.type,
-                payload: false
-            })
-        ).toEqual({
-            isBuyClicked: false
+            industries: [{
+                name: 'Farmland',
+                isContribLocked: false
+            }]
         })
     })
 })

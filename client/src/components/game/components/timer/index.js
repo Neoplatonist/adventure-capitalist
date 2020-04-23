@@ -33,7 +33,7 @@ export default class Timer extends Component {
         let seconds = this.state.secondsRemaining
         seconds--
 
-        if (seconds <= 0) {
+        if (seconds < 0) {
             clearInterval(this.intervalHandle)
             this.intervalHandle = undefined
             seconds = this.props.wait
@@ -49,7 +49,7 @@ export default class Timer extends Component {
 
         return (
             <Fragment>
-                Timer: {min}:{sec}
+                Timer: {min}:{0 < sec && sec < 1 ? 0 : sec}
             </Fragment>
         )
     }

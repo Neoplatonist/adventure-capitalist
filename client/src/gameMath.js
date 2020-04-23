@@ -1,5 +1,4 @@
-const multiplier = 1.10
-
-const GameMath = {
-    cost: (baseCost, numOwned) => baseCost * multiplier ** numOwned
+export const GameMath = {
+    cost: (baseCost, multiplier, numOwned) => baseCost * multiplier ** numOwned,
+    production: (production, multiplier, numOwned) => (production * numOwned) * multiplier
 }

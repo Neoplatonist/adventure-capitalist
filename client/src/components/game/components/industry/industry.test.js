@@ -1,8 +1,17 @@
-import industry, { lockBuy, unlockBuy, incIndustryContrib } from './industrySlice'
+import industry, {
+    setCurrentCost,
+    setCurrentIncome,
+    incNumOwned,
+    lockBuy,
+    unlockBuy,
+    unlockIndustry,
+    incIndustryContrib,
+    buyIndustry
+} from './industrySlice'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import { industries } from '../../../../db'
-import { incAntimatter } from '../../gameSlice'
+import { decAntimatter, incAntimatter } from '../../gameSlice'
 
 const middlewares = [thunk]
 const mockStore = configureMockStore(middlewares)
@@ -12,65 +21,206 @@ describe('industry reducer', () => {
         expect(industry(undefined, {})).toEqual({ industries })
     })
 
-    it('should handle lockBuy', () => {
-        expect(
-            industry({
+    describe('industry actions', () => {
+        it('should handle setCurrentCost', () => {
+            expect(
+                industry({
+                    industries: [{
+                        name: 'Farmland',
+                        cost: 1,
+                        currentCost: 1
+                    }]
+                }, {
+                    type: setCurrentCost.type,
+                    payload: {
+                        name: 'Farmland',
+                        cost: 5
+                    }
+                })
+            ).toEqual({
                 industries: [{
                     name: 'Farmland',
-                    isContribLocked: false
+                    cost: 1,
+                    currentCost: 5
                 }]
-            }, {
-                type: lockBuy.type,
-                payload: 'Farmland'
             })
-        ).toEqual({
-            industries: [{
-                name: 'Farmland',
-                isContribLocked: true
-            }]
         })
-    })
 
-    it('should handle unlockBuy', () => {
-        expect(
-            industry({
+        it('should handle setCurrentIncome', () => {
+            expect(
+                industry({
+                    industries: [{
+                        name: 'Farmland',
+                        income: 1,
+                        currentIncome: 1
+                    }]
+                }, {
+                    type: setCurrentIncome.type,
+                    payload: {
+                        name: 'Farmland',
+                        income: 5
+                    }
+                })
+            ).toEqual({
+                industries: [{
+                    name: 'Farmland',
+                    income: 1,
+                    currentIncome: 5
+                }]
+            })
+        })
+
+        it('should handle incNumOwned', () => {
+            expect(
+                industry({
+                    industries: [{
+                        name: 'Farmland',
+                        numberOwned: 1
+                    }]
+                }, {
+                    type: incNumOwned.type,
+                    payload: 'Farmland'
+                })
+            ).toEqual({
+                industries: [{
+                    name: 'Farmland',
+                    numberOwned: 2
+                }]
+            })
+        })
+
+        it('should handle lockBuy', () => {
+            expect(
+                industry({
+                    industries: [{
+                        name: 'Farmland',
+                        isContribLocked: false
+                    }]
+                }, {
+                    type: lockBuy.type,
+                    payload: 'Farmland'
+                })
+            ).toEqual({
                 industries: [{
                     name: 'Farmland',
                     isContribLocked: true
                 }]
-            }, {
-                type: unlockBuy.type,
-                payload: 'Farmland'
             })
-        ).toEqual({
-            industries: [{
-                name: 'Farmland',
-                isContribLocked: false
-            }]
+        })
+
+        it('should handle unlockBuy', () => {
+            expect(
+                industry({
+                    industries: [{
+                        name: 'Farmland',
+                        isContribLocked: true
+                    }]
+                }, {
+                    type: unlockBuy.type,
+                    payload: 'Farmland'
+                })
+            ).toEqual({
+                industries: [{
+                    name: 'Farmland',
+                    isContribLocked: false
+                }]
+            })
+        })
+
+        it('should handle unlockIndustry', () => {
+            expect(
+                industry({
+                    industries: [{
+                        name: 'Farmland',
+                        isLocked: true
+                    }]
+                }, {
+                    type: unlockIndustry.type,
+                    payload: 'Farmland'
+                })
+            ).toEqual({
+                industries: [{
+                    name: 'Farmland',
+                    isLocked: false
+                }]
+            })
         })
     })
 
-    it('should handle incIndustryContrib', () => {
-        let industry = {
-            name: 'Farmland',
-            income: 1,
-            wait: 0,
-            isContribLocked: false
-        }
+    describe('industry thunk actions', () => {
+        it('should handle incIndustryContrib', () => {
+            let industry = {
+                name: 'Farmland',
+                currentIncome: 1,
+                wait: 0,
+                isContribLocked: false
+            }
 
-        const store = mockStore({
-            industries: [industry]
+            const store = mockStore({
+                industries: [industry]
+            })
+
+            const expectedActions = [
+                { type: lockBuy.type, payload: 'Farmland' },
+                { type: incAntimatter.type, payload: industry.currentIncome },
+                { type: unlockBuy.type, payload: 'Farmland' }
+            ]
+
+            jest.useFakeTimers()
+            store.dispatch(incIndustryContrib(industry))
+            jest.runAllTimers()
+            expect(store.getActions()).toEqual(expectedActions)
         })
 
-        const expectedActions = [
-            { type: lockBuy.type, payload: 'Farmland' },
-            { type: incAntimatter.type, payload: industry.income },
-            { type: unlockBuy.type, payload: 'Farmland' }
-        ]
+        describe('should handle buyIndustry', () => {
+            it('numberOwned > 0', () => {
+                let industry = {
+                    name: 'Farmland',
+                    baseCost: 1,
+                    coefficient: 1,
+                    income: 1,
+                    numberOwned: 1
+                }
 
-        jest.useFakeTimers()
-        store.dispatch(incIndustryContrib(industry))
-        jest.runAllTimers()
-        expect(store.getActions()).toEqual(expectedActions)
+                const store = mockStore({
+                    industries: [industry]
+                })
+
+                const expectedActions = [
+                    { type: decAntimatter.type, payload: 1 },
+                    { type: incNumOwned.type, payload: 'Farmland' },
+                    { type: setCurrentCost.type, payload: { name: 'Farmland', cost: 1 } },
+                    { type: setCurrentIncome.type, payload: { name: 'Farmland', income: 2 } },
+                ]
+
+                store.dispatch(buyIndustry(industry))
+                expect(store.getActions()).toEqual(expectedActions)
+            })
+
+            it('numberOwned == 0', () => {
+                let industry = {
+                    name: 'Farmland',
+                    baseCost: 1,
+                    coefficient: 1,
+                    income: 1,
+                    numberOwned: 0
+                }
+
+                const store = mockStore({
+                    industries: [industry]
+                })
+
+                const expectedActions = [
+                    { type: decAntimatter.type, payload: 1 },
+                    { type: incNumOwned.type, payload: 'Farmland' },
+                    { type: setCurrentCost.type, payload: { name: 'Farmland', cost: 1 } },
+                    { type: setCurrentIncome.type, payload: { name: 'Farmland', income: 1 } },
+                    { type: unlockIndustry.type, payload: 'Farmland' },
+                ]
+
+                store.dispatch(buyIndustry(industry))
+                expect(store.getActions()).toEqual(expectedActions)
+            })
+        })
     })
 })

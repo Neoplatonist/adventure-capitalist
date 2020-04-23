@@ -13,14 +13,14 @@ class Game extends Component {
         industries: PropTypes.arrayOf(
             PropTypes.shape({
                 name: PropTypes.string.isRequired,
+                income: PropTypes.number.isRequired,
                 baseCost: PropTypes.number.isRequired,
-                currentCost: PropTypes.number.isRequired,
-                upgrade: PropTypes.number.isRequired,
                 numberOwned: PropTypes.number.isRequired,
                 manager: PropTypes.bool.isRequired,
                 wait: PropTypes.number.isRequired,
-                unlocked: PropTypes.bool.isRequired,
-                isContribLocked: PropTypes.bool.isRequired
+                isLocked: PropTypes.bool.isRequired,
+                isContribLocked: PropTypes.bool.isRequired,
+                coefficient: PropTypes.number.isRequired
             })
         ).isRequired
     }
@@ -39,7 +39,7 @@ class Game extends Component {
         return (
             <Fragment>
                 <header id="game-header">
-                    {'Antimatter: ' + antimatter}
+                    <h1>{'Antimatter: ' + antimatter.toFixed(2)}</h1>
                 </header>
 
                 <aside id="game-menu">

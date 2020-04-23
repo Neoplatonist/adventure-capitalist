@@ -1,12 +1,37 @@
 .industry {
-    padding: 0.5rem 3rem;
-    font-size: 1.2rem;
+    width: 48%;
+    margin: 0.2rem;
+    padding: 0.2rem;
+    /* border: lightcoral solid 1px; */
+    font-size: 1.6rem;
+    display: grid;
+    grid-gap: 0.2rem;
+    grid-template-columns: [col1] 1fr [col2] 1fr [col3] 1fr [col-end];
+    grid-template-rows: [row1] 1fr [row2] 1fr [row3] 1fr [row4] 1fr [row-end];
+}
+
+/* .industry {
+    margin: 0;
+    padding: 0rem 3rem;
+} */
+
+.industry h4 {
+    margin: 0;
+    display: flex;
+    align-self: center;
+    justify-self: center;
+    grid-column: col1 / col3;
+    grid-row: row1;
 }
 
 .industry .stats {
-    margin: -1rem 0 1rem 0;
+    margin: 0;
     display: flex;
-    justify-content: space-around;
+    flex-direction: column;
+    align-self: center;
+    justify-self: center;
+    grid-column: col1 / col3;
+    grid-row: row2 / row-end;
 }
 
 .industry .stats p {
@@ -15,5 +40,20 @@
 }
 
 .industry .button {
-    font-size: 1rem;
+    cursor: pointer;
+    /* margin: 0.1rem; */
+    display: block;
+    font-size: 1.6rem;
 }
+
+.industry .btn-buy {
+    grid-column: col3 / col-end;
+    grid-row: row1 / row3;
+}
+
+.industry .btn-collect {
+    grid-column: col3 / col-end;
+    grid-row: row3 / row-end;
+}
+
+

@@ -8,6 +8,7 @@
     grid-column: col2-start / col3-end;
     grid-row: row1-start / row2-start;
     background-color: indianred;
+    text-align: center;
 }
 
 #game-industries {

@@ -13,17 +13,60 @@ class Game extends Component {
         industries: PropTypes.arrayOf(
             PropTypes.shape({
                 name: PropTypes.string.isRequired,
+                coefficient: PropTypes.number.isRequired,
                 income: PropTypes.number.isRequired,
+                currentIncome: PropTypes.number.isRequired,
                 baseCost: PropTypes.number.isRequired,
+                currentCost: PropTypes.number.isRequired,
                 numberOwned: PropTypes.number.isRequired,
                 manager: PropTypes.bool.isRequired,
                 wait: PropTypes.number.isRequired,
                 isLocked: PropTypes.bool.isRequired,
                 isContribLocked: PropTypes.bool.isRequired,
-                coefficient: PropTypes.number.isRequired
             })
         ).isRequired
     }
+
+    constructor() {
+        super()
+
+        this.secondsPassed = 0
+        this.oldTimeStamp = 0
+    }
+
+    componentDidMount() {
+        this.startLoop()
+    }
+
+    componentWillUnmount() {
+        this.stopLoop()
+    }
+
+    startLoop() {
+        if (!this._frameId) {
+            this._frameId = window.requestAnimationFrame(this.loop)
+        }
+    }
+
+    loop = (timeStamp) => {
+        //Calculate the number of seconds passed
+        //since the last frame
+        this.secondsPassed = (timeStamp - this.oldTimeStamp) / 1000
+        this.oldTimeStamp = timeStamp
+
+        if (this.secondsPassed === 1000) {
+            this.props.updateAll()
+        }
+
+        // Set up next iteration of the loop
+        this._frameId = window.requestAnimationFrame(this.loop)
+    }
+
+    stopLoop() {
+        // cancelAnimationFrame() won't throw an error
+        window.cancelAnimationFrame(this._frameId)
+    }
+
 
     getIndustries() {
         return this.props.industries.map(industry => {

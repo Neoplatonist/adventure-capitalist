@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { incAntimatterAsync, decAntimatterAsync } from '../../gameSlice'
 import { GameMath } from '../../../../gameMath'
-import { industries } from '../../../../db'
+import { industryList } from '../../../../db'
 
 const getIndexByName = (arr, name) =>
     arr.findIndex(i => i.name === name)
@@ -9,33 +9,33 @@ const getIndexByName = (arr, name) =>
 export const industrySlice = createSlice({
     name: 'industry',
     initialState: {
-        industries
+        industryList
         // industries: []
     },
     reducers: {
         setCurrentCost: (state, action) => {
-            let index = getIndexByName(state.industries, action.payload.name)
-            state.industries[index].currentCost = action.payload.cost
+            let index = getIndexByName(state.industryList, action.payload.name)
+            state.industryList[index].currentCost = action.payload.cost
         },
         setCurrentIncome: (state, action) => {
-            let index = getIndexByName(state.industries, action.payload.name)
-            state.industries[index].currentIncome = action.payload.income
+            let index = getIndexByName(state.industryList, action.payload.name)
+            state.industryList[index].currentIncome = action.payload.income
         },
         incNumOwned: (state, action) => {
-            let index = getIndexByName(state.industries, action.payload)
-            state.industries[index].numberOwned++
+            let index = getIndexByName(state.industryList, action.payload)
+            state.industryList[index].numberOwned++
         },
         lockBuy: (state, action) => {
-            let index = getIndexByName(state.industries, action.payload)
-            state.industries[index].isContribLocked = true
+            let index = getIndexByName(state.industryList, action.payload)
+            state.industryList[index].isContribLocked = true
         },
         unlockBuy: (state, action) => {
-            let index = getIndexByName(state.industries, action.payload)
-            state.industries[index].isContribLocked = false
+            let index = getIndexByName(state.industryList, action.payload)
+            state.industryList[index].isContribLocked = false
         },
         unlockIndustry: (state, action) => {
-            let index = getIndexByName(state.industries, action.payload)
-            state.industries[index].isLocked = false
+            let index = getIndexByName(state.industryList, action.payload)
+            state.industryList[index].isLocked = false
         }
     },
     // extraReducers: {
@@ -69,6 +69,22 @@ export const incIndustryContrib = ({
     }, wait)
 }
 
+export const incIndustryContribByName = (name) => (dispatch, getState) => {
+    const industry = getState().industry.industryList
+        .filter(industry => industry.name === name)
+
+    const { currentIncome, isContribLocked, wait } = industry[0]
+
+    if (!isContribLocked) {
+        dispatch(lockBuy(name))
+        dispatch(incAntimatterAsync(currentIncome))
+
+        setTimeout(() => {
+            dispatch(unlockBuy(name))
+        }, wait)
+    }
+}
+
 export const buyIndustry = ({ baseCost, coefficient, income, name, numberOwned }) => (dispatch) => {
     // calculates the cost of the next industry purchase
     const cost = GameMath.cost(baseCost, coefficient, numberOwned)
@@ -87,6 +103,10 @@ export const buyIndustry = ({ baseCost, coefficient, income, name, numberOwned }
     // recalculate currentCost using an algorithm
 }
 
+export const setupIndustry = () => (dispatch) => {
+    // dispatch(fetchIndustries())
+}
+
 // This will be used to fetch industries list from the server
 // and create a save state for the industries
 export const fetchIndustries = createAsyncThunk(
@@ -96,5 +116,11 @@ export const fetchIndustries = createAsyncThunk(
         // return response.data
     }
 )
+
+// export const selectIndustry()
+
+export const selectManagedIndustries = (state) => {
+    return state.industry.industryList.filter(industry => industry.isManaged)
+}
 
 export default industrySlice.reducer

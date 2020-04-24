@@ -6,7 +6,7 @@ import {
     incIndustryContrib
 } from './industrySlice'
 import { selectAntiMatter } from '../../gameSlice'
-import Timer from '../timer'
+import Timer from './timer'
 import './industry.css'
 
 class Industry extends Component {

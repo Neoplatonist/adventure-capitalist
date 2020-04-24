@@ -1,4 +1,4 @@
-export const industries = [
+export const industryList = [
     {
         name: 'Farmland',
         coefficient: 1.07,
@@ -7,8 +7,8 @@ export const industries = [
         baseCost: 3.78,
         currentCost: 3.78,
         numberOwned: 1,
-        manager: false,
-        wait: 600,
+        isManaged: true,
+        wait: 1000,
         isLocked: false,
         isContribLocked: false
     },
@@ -20,7 +20,7 @@ export const industries = [
         baseCost: 60,
         currentCost: 60,
         numberOwned: 0,
-        manager: false,
+        isManaged: true,
         wait: 3000,
         isLocked: true,
         isContribLocked: false
@@ -33,7 +33,7 @@ export const industries = [
         baseCost: 720,
         currentCost: 720,
         numberOwned: 0,
-        manager: false,
+        isManaged: true,
         wait: 6000,
         isLocked: true,
         isContribLocked: false
@@ -46,7 +46,7 @@ export const industries = [
         baseCost: 8640,
         currentCost: 8640,
         numberOwned: 0,
-        manager: false,
+        isManaged: true,
         wait: 12000,
         isLocked: true,
         isContribLocked: false
@@ -59,7 +59,7 @@ export const industries = [
         baseCost: 103680,
         currentCost: 103680,
         numberOwned: 0,
-        manager: false,
+        isManaged: true,
         wait: 24000,
         isLocked: true,
         isContribLocked: false
@@ -72,7 +72,7 @@ export const industries = [
         baseCost: 1244160,
         currentCost: 1244160,
         numberOwned: 0,
-        manager: false,
+        isManaged: true,
         wait: 96000,
         isLocked: true,
         isContribLocked: false
@@ -85,7 +85,7 @@ export const industries = [
         baseCost: 149299920,
         currentCost: 149299920,
         numberOwned: 0,
-        manager: false,
+        isManaged: true,
         wait: 384000,
         isLocked: true,
         isContribLocked: false
@@ -98,7 +98,7 @@ export const industries = [
         baseCost: 179159040,
         currentCost: 179159040,
         numberOwned: 0,
-        manager: false,
+        isManaged: true,
         wait: 1536000,
         isLocked: true,
         isContribLocked: false
@@ -111,7 +111,7 @@ export const industries = [
         baseCost: 2149908480,
         currentCost: 2149908480,
         numberOwned: 0,
-        manager: false,
+        isManaged: true,
         wait: 6144000,
         isLocked: true,
         isContribLocked: false
@@ -124,10 +124,83 @@ export const industries = [
         baseCost: 25798901760,
         currentCost: 25798901760,
         numberOwned: 0,
-        manager: false,
+        isManaged: true,
         wait: 36864000,
         isLocked: true,
         isContribLocked: false
+    }
+]
+
+
+export const managerList = [
+    {
+        name: 'Farmland',
+        wait: 1000,
+        isLocked: true,
+        cost: 1000,
+        secCounter: 0
+    },
+    {
+        name: 'Mineral Extractor',
+        wait: 3000,
+        isLocked: true,
+        cost: 15000,
+        secCounter: 0
+    },
+    {
+        name: 'Particle Generator',
+        wait: 6000,
+        isLocked: true,
+        cost: 100000,
+        secCounter: 0
+    },
+    {
+        name: 'Trading Post',
+        wait: 12000,
+        isLocked: true,
+        cost: 500000,
+        secCounter: 0
+    },
+    {
+        name: 'Academy',
+        wait: 24000,
+        isLocked: true,
+        cost: 1200000,
+        secCounter: 0
+    },
+    {
+        name: 'Data Silo',
+        wait: 96000,
+        isLocked: true,
+        cost: 10000000,
+        secCounter: 0
+    },
+    {
+        name: 'Labratory',
+        wait: 384000,
+        isLocked: true,
+        cost: 111111111,
+        secCounter: 0
+    },
+    {
+        name: 'Colony',
+        wait: 1536000,
+        isLocked: true,
+        cost: 555555555,
+        secCounter: 0
+    },
+    {
+        name: 'Federation',
+        wait: 6144000,
+        isLocked: true,
+        cost: 10000000000,
+        secCounter: 0
+    },
+    {
+        name: 'Galactic Expedition',
+        wait: 36864000,
+        isLocked: true,
+        cost: 100000000000
     }
 ]
 

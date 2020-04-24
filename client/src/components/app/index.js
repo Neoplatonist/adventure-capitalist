@@ -9,9 +9,8 @@ function App() {
         Astral Tycoon
       </header>
 
-      <main className="App-main">
-        <Game />
-      </main>
+
+      <Game />
 
       <footer className="App-footer">
         2020 &hearts; Joshua Johnston

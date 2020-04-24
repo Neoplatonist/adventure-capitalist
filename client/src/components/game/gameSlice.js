@@ -1,4 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { setupIndustry } from './components/industry/industrySlice'
+import { setupManager, updateManager } from './components/menu/components/managerList/managerListSlice'
 
 export const gameSlice = createSlice({
     name: 'game',
@@ -22,6 +24,11 @@ export const {
 } = gameSlice.actions
 
 // Thunk Actions
+export const setupGame = () => (dispatch) => {
+    dispatch(setupIndustry())
+    dispatch(setupManager())
+}
+
 // possibly update both server db and client state
 // If not, delete these and use the reducer actions
 export const incAntimatterAsync = (amount) => (dispatch) => {
@@ -30,6 +37,10 @@ export const incAntimatterAsync = (amount) => (dispatch) => {
 
 export const decAntimatterAsync = (amount) => (dispatch) => {
     dispatch(decAntimatter(amount))
+}
+
+export const updateAll = () => (dispatch) => {
+    dispatch(updateManager())
 }
 
 // Selector Functions

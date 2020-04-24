@@ -1,36 +1,21 @@
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Industry from './components/industry'
 import { connect } from 'react-redux'
 import {
-    selectAntiMatter
+    selectAntiMatter,
+    updateAll
 } from './gameSlice'
+import {
+    selectManagedIndustries
+} from './components/industry/industrySlice'
 import './game.css'
+import Menu from './components/menu'
 
 class Game extends Component {
-    static propTypes = {
-        antimatter: PropTypes.number.isRequired,
-        industries: PropTypes.arrayOf(
-            PropTypes.shape({
-                name: PropTypes.string.isRequired,
-                coefficient: PropTypes.number.isRequired,
-                income: PropTypes.number.isRequired,
-                currentIncome: PropTypes.number.isRequired,
-                baseCost: PropTypes.number.isRequired,
-                currentCost: PropTypes.number.isRequired,
-                numberOwned: PropTypes.number.isRequired,
-                manager: PropTypes.bool.isRequired,
-                wait: PropTypes.number.isRequired,
-                isLocked: PropTypes.bool.isRequired,
-                isContribLocked: PropTypes.bool.isRequired,
-            })
-        ).isRequired
-    }
-
     constructor() {
         super()
 
-        this.secondsPassed = 0
         this.oldTimeStamp = 0
     }
 
@@ -51,11 +36,15 @@ class Game extends Component {
     loop = (timeStamp) => {
         //Calculate the number of seconds passed
         //since the last frame
-        this.secondsPassed = (timeStamp - this.oldTimeStamp) / 1000
-        this.oldTimeStamp = timeStamp
+        const secondsPassed = (timeStamp - this.oldTimeStamp)
 
-        if (this.secondsPassed === 1000) {
+        if (this.oldTimeStamp === 0) {
+            this.oldTimeStamp = timeStamp
+        }
+
+        if (secondsPassed >= 1000) {
             this.props.updateAll()
+            this.oldTimeStamp = timeStamp
         }
 
         // Set up next iteration of the loop
@@ -69,7 +58,7 @@ class Game extends Component {
 
 
     getIndustries() {
-        return this.props.industries.map(industry => {
+        return this.props.industryList.map(industry => {
             return <Industry
                 key={'industry-' + industry.name}
                 industry={industry} />
@@ -77,29 +66,54 @@ class Game extends Component {
     }
 
     render() {
-        const { antimatter, industries } = this.props
+        const { antimatter, industryList } = this.props
 
         return (
-            <Fragment>
+            <main>
                 <header id="game-header">
                     <h1>{'Antimatter: ' + antimatter.toFixed(2)}</h1>
                 </header>
 
-                <aside id="game-menu">
-                    Menu
-                </aside>
+                <Menu />
 
                 <article id="game-industries">
-                    {industries.length === 0 ? 'Loading...' : this.getIndustries()}
+                    {industryList.length === 0 ? 'Loading...' : this.getIndustries()}
                 </article>
-            </Fragment>
+            </main>
         )
     }
 }
 
+const industryType = PropTypes.arrayOf(
+    PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        coefficient: PropTypes.number.isRequired,
+        income: PropTypes.number.isRequired,
+        currentIncome: PropTypes.number.isRequired,
+        baseCost: PropTypes.number.isRequired,
+        currentCost: PropTypes.number.isRequired,
+        numberOwned: PropTypes.number.isRequired,
+        isManaged: PropTypes.bool.isRequired,
+        wait: PropTypes.number.isRequired,
+        isLocked: PropTypes.bool.isRequired,
+        isContribLocked: PropTypes.bool.isRequired,
+    })
+).isRequired
+
+Game.propTypes = {
+    antimatter: PropTypes.number.isRequired,
+    industryList: industryType,
+    managedIndustries: industryType
+}
+
 const mapStateToProps = state => ({
     antimatter: selectAntiMatter(state),
-    industries: state.industry.industries
+    industryList: state.industry.industryList,
+    managedIndustries: selectManagedIndustries(state)
 })
 
-export default connect(mapStateToProps, null)(Game)
+const mapDispatchToProps = {
+    updateAll
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Game)

@@ -1,0 +1,6 @@
+#game-menu {
+    grid-column: col1-start;
+    grid-row: row1-start / row7-end;
+    background-color: green;
+    font-size: 2rem;
+}

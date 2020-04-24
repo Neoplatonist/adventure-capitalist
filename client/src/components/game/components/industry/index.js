@@ -3,7 +3,8 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import {
     buyIndustry,
-    incIndustryContrib
+    incIndustryContrib,
+    resetContribLocksAsync
 } from './industrySlice'
 import { selectAntiMatter } from '../../gameSlice'
 import Timer from './timer'
@@ -15,6 +16,10 @@ class Industry extends Component {
         industry: PropTypes.object.isRequired,
         buyIndustry: PropTypes.func.isRequired,
         incIndustryContrib: PropTypes.func.isRequired
+    }
+
+    componentDidMount() {
+        this.props.resetContribLocksAsync()
     }
 
     handleBuy = (e) => {
@@ -89,7 +94,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
     buyIndustry,
-    incIndustryContrib
+    incIndustryContrib,
+    resetContribLocksAsync
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Industry)

@@ -93,7 +93,6 @@ const industryType = PropTypes.arrayOf(
         baseCost: PropTypes.number.isRequired,
         currentCost: PropTypes.number.isRequired,
         numberOwned: PropTypes.number.isRequired,
-        isManaged: PropTypes.bool.isRequired,
         wait: PropTypes.number.isRequired,
         isLocked: PropTypes.bool.isRequired,
         isContribLocked: PropTypes.bool.isRequired,

@@ -36,6 +36,9 @@ export const industrySlice = createSlice({
         unlockIndustry: (state, action) => {
             let index = getIndexByName(state.industryList, action.payload)
             state.industryList[index].isLocked = false
+        },
+        resetContribLocks: (state, action) => {
+            state.industryList = [...action.payload]
         }
     },
     // extraReducers: {
@@ -52,10 +55,22 @@ export const {
     incNumOwned,
     lockBuy,
     unlockBuy,
-    unlockIndustry
+    unlockIndustry,
+    resetContribLocks
 } = industrySlice.actions
 
 // Thunk Actions
+export const resetContribLocksAsync = () => (dispatch, getState) => {
+    // deep copy the state
+    let list = JSON.parse(JSON.stringify(getState().industry.industryList))
+
+    list.forEach(industry => {
+        industry.isContribLocked = false
+    })
+
+    dispatch(resetContribLocks(list))
+}
+
 export const incIndustryContrib = ({
     currentIncome,
     name,

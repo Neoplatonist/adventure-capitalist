@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { managerList } from '../../../../../../db'
 import { incIndustryContribByName } from '../../../industry/industrySlice'
+import { decAntimatterAsync } from '../../../../gameSlice'
 
 const getIndexByName = (arr, name) =>
     arr.findIndex(i => i.name === name)
@@ -45,8 +46,9 @@ export const setupManager = () => (dispatch, getState) => {
     });
 }
 
-export const startManager = (name) => (dispatch) => {
+export const startManager = ({ cost, name }) => (dispatch) => {
     dispatch(unlockManager(name))
+    dispatch(decAntimatterAsync(cost))
     dispatch(incIndustryContribByName(name))
 }
 

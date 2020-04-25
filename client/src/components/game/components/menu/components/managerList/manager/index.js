@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { startManager } from '../managerListSlice'
+import numeral from 'numeral'
 
 class Manager extends Component {
     handleClick = (e) => {
         if (this.props.antimatter > this.props.manager.cost) {
-            this.props.startManager(this.props.manager.name)
+            this.props.startManager(this.props.manager)
         }
     }
 
@@ -22,7 +23,7 @@ class Manager extends Component {
 
                     <br />
 
-                    ${cost}
+                    &#9797;{numeral(cost).format('0.00a')}
                 </button>
             </div>
         )

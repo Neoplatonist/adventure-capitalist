@@ -5,7 +5,8 @@ import { setupManager, updateManager } from './components/menu/components/manage
 export const gameSlice = createSlice({
     name: 'game',
     initialState: {
-        antimatter: 0
+        antimatter: 0,
+        timeStamp: 0
     },
     reducers: {
         incAntimatter: (state, action) => {
@@ -13,6 +14,9 @@ export const gameSlice = createSlice({
         },
         decAntimatter: (state, action) => {
             state.antimatter -= action.payload
+        },
+        setTimeStamp: (state, action) => {
+            state.timeStamp = new Date() / 1000
         }
     }
 })
@@ -20,7 +24,8 @@ export const gameSlice = createSlice({
 // Actions
 export const {
     incAntimatter,
-    decAntimatter
+    decAntimatter,
+    setTimeStamp
 } = gameSlice.actions
 
 // Thunk Actions
@@ -41,6 +46,7 @@ export const decAntimatterAsync = (amount) => (dispatch) => {
 
 export const updateAll = () => (dispatch) => {
     dispatch(updateManager())
+    dispatch(setTimeStamp())
 }
 
 // Selector Functions

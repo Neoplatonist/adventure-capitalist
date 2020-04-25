@@ -6,8 +6,6 @@ import './managerList.css'
 import { selectManagersLocked } from './managerListSlice'
 
 class ManagerList extends Component {
-
-
     getManagers() {
         return this.props.managerList.map(manager => {
             return <Manager
@@ -25,13 +23,19 @@ class ManagerList extends Component {
     }
 }
 
+ManagerList.propTypes = {
+    managerList: PropTypes.arrayOf(
+        PropTypes.shape({
+            name: PropTypes.string.isRequired,
+            isLocked: PropTypes.bool.isRequired,
+            cost: PropTypes.number.isRequired,
+            secCounter: PropTypes.number.isRequired,
+        })
+    ).isRequired
+}
+
 const mapStateToProps = state => ({
     managerList: selectManagersLocked(state),
 })
-
-// const mapDispatchToProps = {
-//     buyIndustry,
-//     incIndustryContrib
-// }
 
 export default connect(mapStateToProps, null)(ManagerList)

@@ -11,6 +11,7 @@ import {
 } from './components/industry/industrySlice'
 import './game.css'
 import Menu from './components/menu'
+import numeral from 'numeral'
 
 class Game extends Component {
     constructor() {
@@ -20,6 +21,9 @@ class Game extends Component {
     }
 
     componentDidMount() {
+        // check the timestamp vs now and calculate the money
+        // made over the period of time of being away
+
         this.startLoop()
     }
 
@@ -71,7 +75,7 @@ class Game extends Component {
         return (
             <main>
                 <header id="game-header">
-                    <h1>{'Antimatter: ' + antimatter.toFixed(2)}</h1>
+                    <h1>&#9797;{'Antimatter: ' + numeral(antimatter).format('0.00a')}</h1>
                 </header>
 
                 <Menu />

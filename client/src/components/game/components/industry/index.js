@@ -8,6 +8,7 @@ import {
 } from './industrySlice'
 import { selectAntiMatter } from '../../gameSlice'
 import Timer from './timer'
+import numeral from 'numeral'
 import './industry.css'
 
 class Industry extends Component {
@@ -57,7 +58,7 @@ class Industry extends Component {
                 <h4>{industry.name} x {industry.numberOwned}</h4>
 
                 <div className="stats">
-                    <p>{'Income: ' + industry.currentIncome.toFixed(2)}</p>
+                    <p>Output: &#9797;{numeral(industry.currentIncome).format('0.00a')}</p>
                     <p>
                         <Timer
                             isContribLocked={industry.isContribLocked}
@@ -72,13 +73,13 @@ class Industry extends Component {
                     disabled={
                         antimatter < (industry.currentCost || industry.baseCost)
                             ? true : false}>
-                    Buy ${industry.currentCost.toFixed(2)}
+                    Buy &#9797;{numeral(industry.currentCost).format('0.00a')}
                 </button>
 
                 <button
                     className="button btn-collect"
                     onClick={this.handleCollect}
-                    disabled={industry.isLocked ? true : false}>
+                    disabled={industry.isLocked || industry.isContribLocked ? true : false}>
                     Collect
                     </button>
                 {/* </div> */}

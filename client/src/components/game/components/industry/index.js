@@ -1,14 +1,13 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import numeral from 'numeral'
 import {
     buyIndustry,
     incIndustryContrib,
     resetContribLocksAsync
 } from './industrySlice'
-import { selectAntiMatter } from '../../gameSlice'
 import Timer from './timer'
-import numeral from 'numeral'
 import './industry.css'
 
 class Industry extends Component {
@@ -54,11 +53,10 @@ class Industry extends Component {
 
         return (
             <section className="industry">
-                {/* <div id="industry"> */}
                 <h4>{industry.name} x {industry.numberOwned}</h4>
 
                 <div className="stats">
-                    <p>Output: &#9797;{numeral(industry.currentIncome).format('0.00a')}</p>
+                    <p>Output: &#9797;{numeral(industry.aggregateIncome).format('0.00a')}</p>
                     <p>
                         <Timer
                             isContribLocked={industry.isContribLocked}
@@ -66,7 +64,6 @@ class Industry extends Component {
                     </p>
                 </div>
 
-                {/* <div className="btn-group"> */}
                 <button
                     className="button btn-buy"
                     onClick={this.handleBuy}
@@ -79,18 +76,16 @@ class Industry extends Component {
                 <button
                     className="button btn-collect"
                     onClick={this.handleCollect}
-                    disabled={industry.isLocked || industry.isContribLocked ? true : false}>
+                    disabled={industry.isLocked || industry.isManaged ? true : false}>
                     Collect
-                    </button>
-                {/* </div> */}
-                {/* </div> */}
+                </button>
             </section >
         )
     }
 }
 
 const mapStateToProps = state => ({
-    antimatter: selectAntiMatter(state),
+    antimatter: state.game.antimatter
 })
 
 const mapDispatchToProps = {

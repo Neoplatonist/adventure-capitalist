@@ -3,7 +3,8 @@ import game, { incAntimatter, decAntimatter } from './gameSlice'
 describe('game reducer', () => {
     it('should handle initial state', () => {
         expect(game(undefined, {})).toEqual({
-            antimatter: 0
+            antimatter: 0,
+            timeStamp: 0
         })
     })
 

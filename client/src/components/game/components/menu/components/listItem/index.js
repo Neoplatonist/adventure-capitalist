@@ -1,21 +1,29 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { startManager } from '../managerListSlice'
 import numeral from 'numeral'
+import { connect } from 'react-redux'
+import './listItem.css'
 
-class Manager extends Component {
+class ListItem extends Component {
     handleClick = (e) => {
-        if (this.props.antimatter > this.props.manager.cost) {
-            this.props.startManager(this.props.manager)
+        const {
+            action,
+            antimatter,
+            dispatch,
+            item
+        } = this.props
+
+        if (antimatter > item.cost) {
+            dispatch(action(item))
         }
     }
 
     render() {
-        const { cost, name } = this.props.manager
+        const { cost, name } = this.props.item
 
         return (
             <div>
                 <button
+                    className="list-item-btn"
                     onClick={this.handleClick}
                     disabled={this.props.antimatter > cost ? false : true
                     }>
@@ -30,12 +38,4 @@ class Manager extends Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-    antimatter: state.game.antimatter
-})
-
-const mapDispatchToProps = {
-    startManager
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Manager)
+export default connect()(ListItem)

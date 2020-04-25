@@ -1,17 +1,12 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import Industry from './components/industry'
 import { connect } from 'react-redux'
-import {
-    selectAntiMatter,
-    updateAll
-} from './gameSlice'
-import {
-    selectManagedIndustries
-} from './components/industry/industrySlice'
-import './game.css'
-import Menu from './components/menu'
 import numeral from 'numeral'
+import { updateAll } from './gameSlice'
+import { selectManagedIndustries } from './components/industry/industrySlice'
+import Industry from './components/industry'
+import Menu from './components/menu'
+import './game.css'
 
 class Game extends Component {
     constructor() {
@@ -110,7 +105,7 @@ Game.propTypes = {
 }
 
 const mapStateToProps = state => ({
-    antimatter: selectAntiMatter(state),
+    antimatter: state.game.antimatter,
     industryList: state.industry.industryList,
     managedIndustries: selectManagedIndustries(state)
 })

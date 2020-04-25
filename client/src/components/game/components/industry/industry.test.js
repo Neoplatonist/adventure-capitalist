@@ -6,11 +6,12 @@ import industry, {
     unlockBuy,
     unlockIndustry,
     incIndustryContrib,
-    buyIndustry
+    buyIndustry,
+    setAggregateIncome
 } from './industrySlice'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import { industryList } from '../../../../db'
+import { industryList, upgradeList } from '../../../../db'
 import { decAntimatter, incAntimatter } from '../../gameSlice'
 
 const middlewares = [thunk]
@@ -34,7 +35,7 @@ describe('industry reducer', () => {
                     type: setCurrentCost.type,
                     payload: {
                         name: 'Farmland',
-                        cost: 5
+                        currentCost: 5
                     }
                 })
             ).toEqual({
@@ -58,7 +59,7 @@ describe('industry reducer', () => {
                     type: setCurrentIncome.type,
                     payload: {
                         name: 'Farmland',
-                        income: 5
+                        currentIncome: 5
                     }
                 })
             ).toEqual({
@@ -157,7 +158,7 @@ describe('industry reducer', () => {
             }
 
             const store = mockStore({
-                industryList: [industry]
+                industryList: industry
             })
 
             const expectedActions = [
@@ -183,14 +184,25 @@ describe('industry reducer', () => {
                 }
 
                 const store = mockStore({
-                    industryList: [industry]
+                    industry: {
+                        industryList
+                    },
+                    upgrade: {
+                        upgradeList
+                    }
                 })
 
                 const expectedActions = [
                     { type: decAntimatter.type, payload: 1 },
                     { type: incNumOwned.type, payload: 'Farmland' },
-                    { type: setCurrentCost.type, payload: { name: 'Farmland', cost: 1 } },
-                    { type: setCurrentIncome.type, payload: { name: 'Farmland', income: 2 } },
+                    { type: setCurrentCost.type, payload: { name: 'Farmland', currentCost: 1 } },
+                    { type: setCurrentIncome.type, payload: { name: 'Farmland', currentIncome: 2 } },
+                    {
+                        type: setAggregateIncome.type, payload: {
+                            name: 'Farmland',
+                            aggregateIncome: 1.67
+                        }
+                    }
                 ]
 
                 store.dispatch(buyIndustry(industry))
@@ -207,14 +219,22 @@ describe('industry reducer', () => {
                 }
 
                 const store = mockStore({
-                    industryList: [industry]
+                    industry: {
+                        industryList
+                    },
+                    upgrade: {
+                        upgradeList
+                    }
                 })
 
                 const expectedActions = [
                     { type: decAntimatter.type, payload: 1 },
                     { type: incNumOwned.type, payload: 'Farmland' },
-                    { type: setCurrentCost.type, payload: { name: 'Farmland', cost: 1 } },
-                    { type: setCurrentIncome.type, payload: { name: 'Farmland', income: 1 } },
+                    { type: setCurrentCost.type, payload: { name: 'Farmland', currentCost: 1 } },
+                    { type: setCurrentIncome.type, payload: { name: 'Farmland', currentIncome: 1 } }, {
+                        type: setAggregateIncome.type,
+                        payload: { name: 'Farmland', aggregateIncome: 1.67 }
+                    },
                     { type: unlockIndustry.type, payload: 'Farmland' },
                 ]
 

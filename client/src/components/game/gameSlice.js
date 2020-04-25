@@ -1,6 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { setupIndustry } from './components/industry/industrySlice'
-import { setupManager, updateManager } from './components/menu/components/managerList/managerListSlice'
+import { setupManager, updateManager }
+    from './components/menu/components/managerList/managerListSlice'
+
 
 export const gameSlice = createSlice({
     name: 'game',
@@ -21,6 +23,7 @@ export const gameSlice = createSlice({
     }
 })
 
+
 // Actions
 export const {
     incAntimatter,
@@ -28,14 +31,17 @@ export const {
     setTimeStamp
 } = gameSlice.actions
 
+
 // Thunk Actions
+
+// When the game is first launched this runs all the setup routines.
 export const setupGame = () => (dispatch) => {
     dispatch(setupIndustry())
     dispatch(setupManager())
 }
 
-// possibly update both server db and client state
-// If not, delete these and use the reducer actions
+// Possibly update both server db and client state.
+// If not, delete these and use the reducer actions.
 export const incAntimatterAsync = (amount) => (dispatch) => {
     dispatch(incAntimatter(amount))
 }
@@ -44,14 +50,18 @@ export const decAntimatterAsync = (amount) => (dispatch) => {
     dispatch(decAntimatter(amount))
 }
 
+// Used in conjunction with the game loop
+//  and lets everything know that a 1 second interval has passed.
 export const updateAll = () => (dispatch) => {
     dispatch(updateManager())
     dispatch(setTimeStamp())
 }
 
+
 // Selector Functions
-// May decide to create a cummulative selector of all industry profits
-// else I will delete this
-export const selectAntiMatter = (state) => state.game.antimatter
+
+// // May decide to create a cummulative selector of all industry profits
+// // else I will delete this
+// export const selectAntiMatter = (state) => state.game.antimatter
 
 export default gameSlice.reducer

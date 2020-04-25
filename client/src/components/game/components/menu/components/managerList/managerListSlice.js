@@ -1,11 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { getIndexByName } from '../../../../../../gameUtility'
 import { managerList } from '../../../../../../db'
 import { incIndustryContribByName } from '../../../industry/industrySlice'
 import { decAntimatterAsync } from '../../../../gameSlice'
 
-const getIndexByName = (arr, name) =>
-    arr.findIndex(i => i.name === name)
-
+// Reducer
 export const managerSlice = createSlice({
     name: 'manager',
     initialState: {
@@ -28,13 +27,17 @@ export const managerSlice = createSlice({
     // }
 })
 
+
 // Actions
 export const {
     unlockManager,
     updateManagerSecCounter
 } = managerSlice.actions
 
+
 // Thunk Actions
+
+// Handles initializing manager data when the app first launches.
 export const setupManager = () => (dispatch, getState) => {
     // dispatch(fetchManagers())
 
@@ -46,12 +49,14 @@ export const setupManager = () => (dispatch, getState) => {
     });
 }
 
+// When a manager is unlocked, this starts the manager duties.
 export const startManager = ({ cost, name }) => (dispatch) => {
     dispatch(unlockManager(name))
     dispatch(decAntimatterAsync(cost))
     dispatch(incIndustryContribByName(name))
 }
 
+// Keeps track of the manager mutex and timer for each individual manager.
 export const updateManager = () => (dispatch, getState) => {
     getState().manager.managerList.forEach(manager => {
         if (!manager.isLocked) {
@@ -62,7 +67,7 @@ export const updateManager = () => (dispatch, getState) => {
 }
 
 // This will be used to fetch industries list from the server
-// and create a save state for the industries
+//  and create a save state for the industries.
 export const fetchManagers = createAsyncThunk(
     'manager/fetchManagers',
     async (thunkAPI) => {
@@ -73,9 +78,12 @@ export const fetchManagers = createAsyncThunk(
 
 
 // Selector Functions
+
+// Creates a view of locked managers to be purchased.
 export const selectManagersLocked = ({ manager }) =>
     manager.managerList.filter(manager => manager.isLocked)
 
+// Creates a view of unlocked managers already purchased.
 export const selectManagersUnlocked = ({ manager }) =>
     manager.managerList.filter(manager => manager.isLocked)
 

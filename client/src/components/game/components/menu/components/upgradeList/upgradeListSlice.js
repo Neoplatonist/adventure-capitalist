@@ -1,27 +1,48 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { getIndexByName } from '../../../../../../gameUtility'
-import { upgradeList } from '../../../../../../db'
 import { decAntimatterAsync } from '../../../../gameSlice'
 import { aggregateTheIncome } from '../../../industry/industrySlice'
+
+// This will be used to fetch industries list from the server
+// and create a save state for the industries
+export const fetchUpgrades = createAsyncThunk(
+    'manager/fetchUpgrades',
+    async (thunkAPI) => {
+        try {
+            let response = await fetch('http://localhost:3001/api/v1/upgrades')
+
+            // check for response.status
+            if (!response.ok) {
+                throw new Error(response.statusText)
+            }
+
+            let { data } = await response.json()
+            console.log('upgradeSlice data: ', data)
+
+            return data
+        } catch (error) {
+            console.error(error)
+        }
+    }
+)
+
 
 export const upgradeSlice = createSlice({
     name: 'upgrade',
     initialState: {
-        upgradeList
+        upgradeList: []
     },
     reducers: {
         unlockUpgradeMultiplier: (state, action) => {
-
-            console.log(action.payload)
             let index = getIndexByName(state.upgradeList, action.payload)
             state.upgradeList[index].isLocked = false
         }
     },
-    // extraReducers: {
-    //     [fetchUpgrades.fulfilled]: (state, action) => {
-    //         state.manager.upgradeList = action.payload
-    //     }
-    // }
+    extraReducers: {
+        [fetchUpgrades.fulfilled]: (state, action) => {
+            state.upgradeList = action.payload
+        }
+    }
 })
 
 
@@ -32,6 +53,13 @@ export const {
 
 
 // Thunk Actions
+
+// Handles initializing manager data when the app first launches.
+export const setupUpgrader = () => (dispatch, getState) => {
+    if (getState().upgrade.upgradeList.length === 0) {
+        dispatch(fetchUpgrades())
+    }
+}
 
 // Returns an upgrade from upgradeList by name.
 export const getUpgradeByName = (name) => (dispatch, getState) => {
@@ -45,17 +73,6 @@ export const unlockUpgradeMultiplierAsync = ({ cost, name }) => (dispatch) => {
     dispatch(decAntimatterAsync(cost))
     dispatch(aggregateTheIncome(name))
 }
-
-
-// This will be used to fetch industries list from the server
-// and create a save state for the industries
-export const fetchUpgrades = createAsyncThunk(
-    'manager/fetchUpgrades',
-    async (thunkAPI) => {
-        // const response = await fetch('http://localhost:3001')
-        // return response.data
-    }
-)
 
 
 // Selector Functions

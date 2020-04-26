@@ -11,7 +11,6 @@ import industry, {
 } from './industrySlice'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import { industryList, upgradeList } from '../../../../db'
 import { decAntimatter, incAntimatter } from '../../gameSlice'
 
 const middlewares = [thunk]
@@ -19,7 +18,7 @@ const mockStore = configureMockStore(middlewares)
 
 describe('industry reducer', () => {
     it('should handle initial state', () => {
-        expect(industry(undefined, {})).toEqual({ industryList })
+        expect(industry(undefined, {})).toEqual({ industryList: [] })
     })
 
     describe('industry actions', () => {
@@ -175,20 +174,30 @@ describe('industry reducer', () => {
 
         describe('should handle buyIndustry', () => {
             it('numberOwned > 0', () => {
-                let industry = {
+                let industry = [{
                     name: 'Farmland',
                     baseCost: 1,
                     coefficient: 1,
                     income: 1,
+                    currentIncome: 1.67,
+                    aggregateIncome: 1.67,
                     numberOwned: 1
-                }
+                }]
+
+                let upgrade = [{
+                    name: 'Farmland',
+                    multiplier: 3,
+                    isLocked: true,
+                    cost: 250000,
+                    secCounter: 0
+                }]
 
                 const store = mockStore({
                     industry: {
-                        industryList
+                        industryList: industry
                     },
                     upgrade: {
-                        upgradeList
+                        upgradeList: upgrade
                     }
                 })
 
@@ -205,40 +214,58 @@ describe('industry reducer', () => {
                     }
                 ]
 
-                store.dispatch(buyIndustry(industry))
+                store.dispatch(buyIndustry(industry[0]))
                 expect(store.getActions()).toEqual(expectedActions)
             })
 
             it('numberOwned == 0', () => {
-                let industry = {
+                let industry = [{
                     name: 'Farmland',
-                    baseCost: 1,
-                    coefficient: 1,
-                    income: 1,
-                    numberOwned: 0
-                }
+                    coefficient: 1.07,
+                    income: 1.67,
+                    currentIncome: 1.67,
+                    aggregateIncome: 1.67,
+                    baseCost: 3.78,
+                    currentCost: 3.78,
+                    numberOwned: 0,
+                    isManaged: false,
+                    wait: 1000,
+                    isLocked: false,
+                    isContribLocked: false
+                }]
+
+                let upgrade = [{
+                    name: 'Farmland',
+                    multiplier: 3,
+                    isLocked: true,
+                    cost: 250000,
+                    secCounter: 0
+                }]
 
                 const store = mockStore({
                     industry: {
-                        industryList
+                        industryList: industry
                     },
                     upgrade: {
-                        upgradeList
+                        upgradeList: upgrade
                     }
                 })
 
                 const expectedActions = [
-                    { type: decAntimatter.type, payload: 1 },
+                    { type: decAntimatter.type, payload: 3.78 },
                     { type: incNumOwned.type, payload: 'Farmland' },
-                    { type: setCurrentCost.type, payload: { name: 'Farmland', currentCost: 1 } },
-                    { type: setCurrentIncome.type, payload: { name: 'Farmland', currentIncome: 1 } }, {
+                    { type: setCurrentCost.type, payload: { name: 'Farmland', currentCost: 3.78 } },
+                    {
+                        type: setCurrentIncome.type,
+                        payload: { name: 'Farmland', currentIncome: 1.7869 }
+                    }, {
                         type: setAggregateIncome.type,
                         payload: { name: 'Farmland', aggregateIncome: 1.67 }
                     },
-                    { type: unlockIndustry.type, payload: 'Farmland' },
+                    { type: unlockIndustry.type, payload: 'Farmland' }
                 ]
 
-                store.dispatch(buyIndustry(industry))
+                store.dispatch(buyIndustry(industry[0]))
                 expect(store.getActions()).toEqual(expectedActions)
             })
         })

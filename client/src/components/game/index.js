@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import numeral from 'numeral'
-import { updateAll } from './gameSlice'
+import { setupGame, updateAll } from './gameSlice'
 import { selectManagedIndustries } from './components/industry/industrySlice'
 import Industry from './components/industry'
 import Menu from './components/menu'
@@ -12,13 +12,15 @@ class Game extends Component {
     constructor() {
         super()
 
-        this.oldTimeStamp = 0
+        // Sets how often the gameloop updates the event timers
+        this.gameLoopInterval = 1000
+        this.gameLoopTimeStamp = 0
     }
 
     componentDidMount() {
         // check the timestamp vs now and calculate the money
         // made over the period of time of being away
-
+        this.props.setupGame()
         this.startLoop()
     }
 
@@ -34,16 +36,18 @@ class Game extends Component {
 
     loop = (timeStamp) => {
         //Calculate the number of seconds passed
-        //since the last frame
-        const secondsPassed = (timeStamp - this.oldTimeStamp)
+        //  since the last frame.
+        const glSecondsPassed = (timeStamp - this.gameLoopTimeStamp)
 
-        if (this.oldTimeStamp === 0) {
-            this.oldTimeStamp = timeStamp
+        if (this.gameLoopTimeStamp === 0) {
+            this.gameLoopTimeStamp = timeStamp
+            this.saveTimeStamp = timeStamp
         }
 
-        if (secondsPassed >= 1000) {
+        if (glSecondsPassed >= this.gameLoopInterval) {
+            console.log('game loop')
             this.props.updateAll()
-            this.oldTimeStamp = timeStamp
+            this.gameLoopTimeStamp = timeStamp
         }
 
         // Set up next iteration of the loop
@@ -111,6 +115,7 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = {
+    setupGame,
     updateAll
 }
 

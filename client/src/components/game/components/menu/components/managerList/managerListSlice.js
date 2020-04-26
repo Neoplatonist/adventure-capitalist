@@ -1,14 +1,38 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { getIndexByName } from '../../../../../../gameUtility'
-import { managerList } from '../../../../../../db'
-import { incIndustryContribByName } from '../../../industry/industrySlice'
+import { incIndustryContribByName, setIsManaged } from '../../../industry/industrySlice'
 import { decAntimatterAsync } from '../../../../gameSlice'
+
+// This will be used to fetch industries list from the server
+//  and create a save state for the industries.
+export const fetchManagers = createAsyncThunk(
+    'manager/fetchManagers',
+    async (thunkAPI) => {
+        try {
+            let response = await fetch('http://localhost:3001/api/v1/managers')
+            console.log('managerFetch', response)
+
+            // check for response.status
+            if (!response.ok) {
+                throw new Error(response.statusText)
+            }
+
+            let { data } = await response.json()
+            console.log('managerSlice data: ', data)
+
+            return data
+        } catch (error) {
+            console.error(error)
+        }
+    }
+)
+
 
 // Reducer
 export const managerSlice = createSlice({
     name: 'manager',
     initialState: {
-        managerList
+        managerList: []
     },
     reducers: {
         unlockManager: (state, action) => {
@@ -20,11 +44,11 @@ export const managerSlice = createSlice({
             state.managerList[index].secCounter++
         },
     },
-    // extraReducers: {
-    //     [fetchManagers.fulfilled]: (state, action) => {
-    //         state.manager.managerList = action.payload
-    //     }
-    // }
+    extraReducers: {
+        [fetchManagers.fulfilled]: (state, action) => {
+            state.managerList = action.payload
+        }
+    }
 })
 
 
@@ -39,7 +63,9 @@ export const {
 
 // Handles initializing manager data when the app first launches.
 export const setupManager = () => (dispatch, getState) => {
-    // dispatch(fetchManagers())
+    if (getState().manager.managerList.length === 0) {
+        dispatch(fetchManagers())
+    }
 
     getState().manager.managerList.forEach(manager => {
         if (!manager.isLocked) {
@@ -54,6 +80,7 @@ export const startManager = ({ cost, name }) => (dispatch) => {
     dispatch(unlockManager(name))
     dispatch(decAntimatterAsync(cost))
     dispatch(incIndustryContribByName(name))
+    dispatch(setIsManaged(name))
 }
 
 // Keeps track of the manager mutex and timer for each individual manager.
@@ -65,16 +92,6 @@ export const updateManager = () => (dispatch, getState) => {
         }
     })
 }
-
-// This will be used to fetch industries list from the server
-//  and create a save state for the industries.
-export const fetchManagers = createAsyncThunk(
-    'manager/fetchManagers',
-    async (thunkAPI) => {
-        // const response = await fetch('http://localhost:3001')
-        // return response.data
-    }
-)
 
 
 // Selector Functions

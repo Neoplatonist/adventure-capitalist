@@ -2,7 +2,8 @@ import { createSlice } from '@reduxjs/toolkit'
 import { setupIndustry } from './components/industry/industrySlice'
 import { setupManager, updateManager }
     from './components/menu/components/managerList/managerListSlice'
-
+import { setupUpgrader }
+    from './components/menu/components/upgradeList/upgradeListSlice'
 
 export const gameSlice = createSlice({
     name: 'game',
@@ -34,10 +35,15 @@ export const {
 
 // Thunk Actions
 
+export const setdbVersion = (version) => (dispatch) => {
+    console.log('version', version)
+}
+
 // When the game is first launched this runs all the setup routines.
-export const setupGame = () => (dispatch) => {
+export const setupGame = () => async (dispatch) => {
     dispatch(setupIndustry())
     dispatch(setupManager())
+    dispatch(setupUpgrader())
 }
 
 // Possibly update both server db and client state.
@@ -51,7 +57,7 @@ export const decAntimatterAsync = (amount) => (dispatch) => {
 }
 
 // Used in conjunction with the game loop
-//  and lets everything know that a 1 second interval has passed.
+//  and lets everything know that an interval has passed.
 export const updateAll = () => (dispatch) => {
     dispatch(updateManager())
     dispatch(setTimeStamp())

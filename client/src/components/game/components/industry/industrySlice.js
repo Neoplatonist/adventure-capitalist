@@ -2,13 +2,34 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { cost, production, getIndexByName } from '../../../../gameUtility'
 import { incAntimatterAsync, decAntimatterAsync } from '../../gameSlice'
 import { getUpgradeByName } from '../menu/components/upgradeList/upgradeListSlice'
-import { industryList } from '../../../../db'
+
+// This will be used to fetch industries list from the server
+//  and create a save state for the industries.
+export const fetchIndustries = createAsyncThunk(
+    'industry/fetchIndustries',
+    async (thunkAPI) => {
+        try {
+            let response = await fetch('http://localhost:3001/api/v1/industries')
+
+            // check for response.status
+            if (!response.ok) {
+                throw new Error(response.statusText)
+            }
+
+            let { data } = await response.json()
+            console.log('industrySlice data: ', data)
+
+            return data
+        } catch (error) {
+            console.error(error)
+        }
+    }
+)
 
 export const industrySlice = createSlice({
     name: 'industry',
     initialState: {
-        industryList
-        // industries: []
+        industryList: []
     },
     reducers: {
         setAggregateIncome: (state, action) => {
@@ -47,11 +68,11 @@ export const industrySlice = createSlice({
             state.industryList = [...action.payload]
         }
     },
-    // extraReducers: {
-    //     [fetchIndustries.fulfilled]: (state, action) => {
-    //         state.industry.industries = action.payload
-    //     }
-    // }
+    extraReducers: {
+        [fetchIndustries.fulfilled]: (state, action) => {
+            state.industryList = action.payload
+        }
+    }
 })
 
 
@@ -60,6 +81,7 @@ export const {
     setAggregateIncome,
     setCurrentCost,
     setCurrentIncome,
+    setIsManaged,
     incNumOwned,
     lockBuy,
     unlockBuy,
@@ -164,25 +186,22 @@ export const buyIndustry = ({
 }
 
 // Handles initializing industry data when the app first launches.
-export const setupIndustry = () => (dispatch) => {
-    // dispatch(fetchIndustries())
-}
-
-// This will be used to fetch industries list from the server
-//  and create a save state for the industries.
-export const fetchIndustries = createAsyncThunk(
-    'industry/fetchIndustries',
-    async (thunkAPI) => {
-        // const response = await fetch('http://localhost:3001')
-        // return response.data
+export const setupIndustry = () => (dispatch, getState) => {
+    if (getState().industry.industryList.length === 0) {
+        dispatch(fetchIndustries())
     }
-)
 
+    // check version number of database on server
+    // to make sure no changes have been made
+    // do this check on gameSlice and pass version to
+    // setup functions: industry, manager, upgrade
+}
 
 // Selector Functions
 
 // Creates a managed industry view by filtering the state.
 export const selectManagedIndustries = (state) => {
+    console.log(state)
     return state.industry.industryList.filter(industry => industry.isManaged)
 }
 

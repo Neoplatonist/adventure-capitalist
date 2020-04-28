@@ -52,33 +52,43 @@ class Industry extends Component {
         const { antimatter, industry } = this.props
 
         return (
-            <section className="industry">
-                <h4>{industry.name} x {industry.numberOwned}</h4>
+            <section className="industry col s6 l4">
+                <div className="industry-container blue-grey lighten-5">
+                    <div className="center">
+                        <h4>{industry.name} x {industry.numberOwned}</h4>
+                    </div>
 
-                <div className="stats">
-                    <p>Output: &#9797;{numeral(industry.aggregateIncome).format('0.00a')}</p>
-                    <p>
-                        <Timer
-                            isContribLocked={industry.isContribLocked}
-                            wait={industry.wait / 1000} />
-                    </p>
+                    <div className="stats col">
+                        <p className="stats-output">Output: &#9797;{numeral(industry.aggregateIncome).format('0.00a')}</p>
+                        <p className="stats-timer">
+                            <Timer
+                                isContribLocked={industry.isContribLocked}
+                                wait={industry.wait / 1000} />
+                        </p>
+                    </div>
+
+                    <div className="container">
+                        <div className="row">
+                            <button
+                                className="button col waves-effect waves-light teal lighten-1 btn-small s10 push-s1"
+                                onClick={this.handleBuy}
+                                disabled={
+                                    antimatter < (industry.currentCost || industry.baseCost)
+                                        ? true : false}>
+                                Buy &#9797;{numeral(industry.currentCost).format('0.00a')}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="container">
+                        <button
+                            className="button col waves-effect waves-light amber darken-1 btn-medium s12"
+                            onClick={this.handleCollect}
+                            disabled={industry.isLocked || industry.isManaged ? true : false}>
+                            Collect
+                    </button>
+                    </div>
                 </div>
-
-                <button
-                    className="button btn-buy"
-                    onClick={this.handleBuy}
-                    disabled={
-                        antimatter < (industry.currentCost || industry.baseCost)
-                            ? true : false}>
-                    Buy &#9797;{numeral(industry.currentCost).format('0.00a')}
-                </button>
-
-                <button
-                    className="button btn-collect"
-                    onClick={this.handleCollect}
-                    disabled={industry.isLocked || industry.isManaged ? true : false}>
-                    Collect
-                </button>
             </section >
         )
     }

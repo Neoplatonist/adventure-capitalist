@@ -1,17 +1,14 @@
 let express = require('express'),
     { Container } = require('typedi'),
+    auth = require('./routes/auth'),
     user = require('./routes/user'),
     industry = require('./routes/industry'),
     manager = require('./routes/manager'),
-    upgrade = require('./routes/upgrade'),
-    middlewares = require('./middlewares')
+    upgrade = require('./routes/upgrade')
 
 module.exports = () => {
     const logger = Container.get('logger')
-    let app = express.Router()
-
-    // Global Middlewares
-    middlewares.session(app)
+    const app = express.Router()
 
     app.get('/v1/dbVersion', async (req, res) => {
         logger.debug('/dbVersion')
@@ -21,6 +18,7 @@ module.exports = () => {
     })
 
     // API Routes
+    auth(app)
     industry(app)
     manager(app)
     upgrade(app)

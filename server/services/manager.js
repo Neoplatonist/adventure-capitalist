@@ -5,38 +5,35 @@ class ManagerService {
     }
 
     async GetAllManagersByUsername(username) {
-        this.logger.debug('Getting all indutries from the database')
+        this.logger.debug('Getting all managers from the database')
 
-        const findManagersForUser = await new Promise(resolve => {
-            // Did not use projections since I need to insert
-            //  manager name property into each manager.
-            this.db.findOne({ username }, (error, doc) => {
-                if (error) {
-                    this.logger.error(error)
-                    resolve({
-                        status: error,
-                        data: []
-                    })
-                }
+        try {
+            const managerList = await new Promise((resolve, reject) => {
+                // Did not use projections since I need to insert
+                //  manager name property into each manager.
+                this.db.findOne({ username }, (error, doc) => {
+                    if (error) {
+                        return reject({ status: 404, message: error })
+                    }
 
-                if (doc === null) {
-                    this.logger.error('user not found')
-                    resolve({
-                        status: 'user not found',
-                        data: []
-                    })
-                } else {
-                    resolve({
-                        status: 'ok',
-                        data: doc.dataSheet.reduce((prev, curr) => {
-                            return [...prev, { name: curr.name, ...curr.manager }]
-                        }, [])
-                    })
-                }
+                    if (doc == null) {
+                        return reject({ status: 404, message: 'user not found' })
+                    }
+
+                    // convert manager datasheet
+                    const managers = doc.dataSheet.reduce((prev, curr) => {
+                        return [...prev, { name: curr.name, ...curr.manager }]
+                    }, [])
+
+                    return resolve(managers)
+                })
             })
-        })
 
-        return findManagersForUser
+            return managerList
+        } catch (error) {
+            this.logger.error('GetAllManagersByUsername error: %o', error)
+            throw error
+        }
     }
 }
 

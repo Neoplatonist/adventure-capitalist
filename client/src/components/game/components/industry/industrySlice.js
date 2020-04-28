@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import axios from 'axios'
 import { cost, production, getIndexByName } from '../../../../gameUtility'
 import { incAntimatterAsync, decAntimatterAsync } from '../../gameSlice'
 import { getUpgradeByName } from '../menu/components/upgradeList/upgradeListSlice'
@@ -9,19 +10,11 @@ export const fetchIndustries = createAsyncThunk(
     'industry/fetchIndustries',
     async (thunkAPI) => {
         try {
-            let response = await fetch('http://localhost:3001/api/v1/industries')
+            let industry = await axios.get('http://localhost:3001/api/v1/industries')
 
-            // check for response.status
-            if (!response.ok) {
-                throw new Error(response.statusText)
-            }
-
-            let { data } = await response.json()
-            console.log('industrySlice data: ', data)
-
-            return data
+            return { list: industry.data, error: '' }
         } catch (error) {
-            console.error(error)
+            return { list: [], error: error.message }
         }
     }
 )
@@ -29,48 +22,54 @@ export const fetchIndustries = createAsyncThunk(
 export const industrySlice = createSlice({
     name: 'industry',
     initialState: {
-        industryList: []
+        industries: {
+            list: [],
+            error: ''
+        }
     },
     reducers: {
         setAggregateIncome: (state, action) => {
-            let index = getIndexByName(state.industryList, action.payload.name)
-            state.industryList[index].aggregateIncome = action.payload.aggregateIncome
+            let index = getIndexByName(state.industries.list, action.payload.name)
+            state.industries.list[index].aggregateIncome = action.payload.aggregateIncome
         },
         setCurrentCost: (state, action) => {
-            let index = getIndexByName(state.industryList, action.payload.name)
-            state.industryList[index].currentCost = action.payload.currentCost
+            let index = getIndexByName(state.industries.list, action.payload.name)
+            state.industries.list[index].currentCost = action.payload.currentCost
         },
         setCurrentIncome: (state, action) => {
-            let index = getIndexByName(state.industryList, action.payload.name)
-            state.industryList[index].currentIncome = action.payload.currentIncome
+            let index = getIndexByName(state.industries.list, action.payload.name)
+            state.industries.list[index].currentIncome = action.payload.currentIncome
         },
         setIsManaged: (state, action) => {
-            let index = getIndexByName(state.industryList, action.payload)
-            state.industryList[index].isManaged = true
+            let index = getIndexByName(state.industries.list, action.payload)
+            state.industries.list[index].isManaged = true
         },
         incNumOwned: (state, action) => {
-            let index = getIndexByName(state.industryList, action.payload)
-            state.industryList[index].numberOwned++
+            let index = getIndexByName(state.industries.list, action.payload)
+            state.industries.list[index].numberOwned++
         },
         lockBuy: (state, action) => {
-            let index = getIndexByName(state.industryList, action.payload)
-            state.industryList[index].isContribLocked = true
+            let index = getIndexByName(state.industries.list, action.payload)
+            state.industries.list[index].isContribLocked = true
         },
         unlockBuy: (state, action) => {
-            let index = getIndexByName(state.industryList, action.payload)
-            state.industryList[index].isContribLocked = false
+            let index = getIndexByName(state.industries.list, action.payload)
+            state.industries.list[index].isContribLocked = false
         },
         unlockIndustry: (state, action) => {
-            let index = getIndexByName(state.industryList, action.payload)
-            state.industryList[index].isLocked = false
+            let index = getIndexByName(state.industries.list, action.payload)
+            state.industries.list[index].isLocked = false
         },
         resetContribLocks: (state, action) => {
-            state.industryList = [...action.payload]
+            state.industries.list = [...action.payload]
         }
     },
     extraReducers: {
         [fetchIndustries.fulfilled]: (state, action) => {
-            state.industryList = action.payload
+            state.industries = action.payload
+        },
+        [fetchIndustries.rejected]: (state, action) => {
+            state.industries = action.payload
         }
     }
 })
@@ -95,7 +94,7 @@ export const {
 // Resets industry contribution locks.
 export const resetContribLocksAsync = () => (dispatch, getState) => {
     // deep copy the state
-    let list = JSON.parse(JSON.stringify(getState().industry.industryList))
+    let list = JSON.parse(JSON.stringify(getState().industry.industries.list))
 
     list.forEach(industry => {
         industry.isContribLocked = false
@@ -121,14 +120,14 @@ export const incIndustryContrib = ({
 
 // Returns an industry from industryList by name.
 export const getIndustryByName = (name) => (dispatch, getState) => {
-    return getState().industry.industryList
+    return getState().industry.industries.list
         .filter(industry => industry.name === name)[0]
 }
 
 // Returns the industry object with the updated total income
 //  from an industry and its multipliers.
 // Also stores the aggregated income in the industry.
-export const aggregateTheIncome = (name) => (dispatch, getState) => {
+export const aggregateTheIncome = (name) => (dispatch) => {
     const industry = dispatch(getIndustryByName(name))
     const { multiplier, isLocked } = dispatch(getUpgradeByName(name))
 
@@ -187,7 +186,7 @@ export const buyIndustry = ({
 
 // Handles initializing industry data when the app first launches.
 export const setupIndustry = () => (dispatch, getState) => {
-    if (getState().industry.industryList.length === 0) {
+    if (getState().industry.industries.list.length === 0) {
         dispatch(fetchIndustries())
     }
 
@@ -201,8 +200,8 @@ export const setupIndustry = () => (dispatch, getState) => {
 
 // Creates a managed industry view by filtering the state.
 export const selectManagedIndustries = (state) => {
-    console.log(state)
-    return state.industry.industryList.filter(industry => industry.isManaged)
+    return state.industry.industries.list
+        .filter(industry => industry.isManaged)
 }
 
 export default industrySlice.reducer

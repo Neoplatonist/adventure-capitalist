@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import axios from 'axios'
 import { getIndexByName } from '../../../../../../gameUtility'
 import { decAntimatterAsync } from '../../../../gameSlice'
 import { aggregateTheIncome } from '../../../industry/industrySlice'
@@ -6,22 +7,14 @@ import { aggregateTheIncome } from '../../../industry/industrySlice'
 // This will be used to fetch industries list from the server
 // and create a save state for the industries
 export const fetchUpgrades = createAsyncThunk(
-    'manager/fetchUpgrades',
+    'upgrade/fetchUpgrades',
     async (thunkAPI) => {
         try {
-            let response = await fetch('http://localhost:3001/api/v1/upgrades')
+            let upgrade = await axios.get('http://localhost:3001/api/v1/upgrades')
 
-            // check for response.status
-            if (!response.ok) {
-                throw new Error(response.statusText)
-            }
-
-            let { data } = await response.json()
-            console.log('upgradeSlice data: ', data)
-
-            return data
+            return { list: upgrade.data, error: '' }
         } catch (error) {
-            console.error(error)
+            return { list: [], error: error.message }
         }
     }
 )
@@ -30,17 +23,23 @@ export const fetchUpgrades = createAsyncThunk(
 export const upgradeSlice = createSlice({
     name: 'upgrade',
     initialState: {
-        upgradeList: []
+        upgrades: {
+            list: [],
+            error: ''
+        }
     },
     reducers: {
         unlockUpgradeMultiplier: (state, action) => {
-            let index = getIndexByName(state.upgradeList, action.payload)
-            state.upgradeList[index].isLocked = false
+            let index = getIndexByName(state.upgrades.list, action.payload)
+            state.upgrades.list[index].isLocked = false
         }
     },
     extraReducers: {
         [fetchUpgrades.fulfilled]: (state, action) => {
-            state.upgradeList = action.payload
+            state.upgrades = action.payload
+        },
+        [fetchUpgrades.fulfilled]: (state, action) => {
+            state.upgrades = action.payload
         }
     }
 })
@@ -56,14 +55,14 @@ export const {
 
 // Handles initializing manager data when the app first launches.
 export const setupUpgrader = () => (dispatch, getState) => {
-    if (getState().upgrade.upgradeList.length === 0) {
+    if (getState().upgrade.upgrades.list.length === 0) {
         dispatch(fetchUpgrades())
     }
 }
 
-// Returns an upgrade from upgradeList by name.
+// Returns an upgrade from upgrades.list by name.
 export const getUpgradeByName = (name) => (dispatch, getState) => {
-    return getState().upgrade.upgradeList
+    return getState().upgrade.upgrades.list
         .filter(upgrade => upgrade.name === name)[0]
 }
 
@@ -79,10 +78,10 @@ export const unlockUpgradeMultiplierAsync = ({ cost, name }) => (dispatch) => {
 
 // Creates a view of locked upgrades to be purchased.
 export const selectUpgradesLocked = ({ upgrade }) =>
-    upgrade.upgradeList.filter(upgrade => upgrade.isLocked)
+    upgrade.upgrades.list.filter(upgrade => upgrade.isLocked)
 
 // Creates a view of unlocked upgrades already purchased.
 export const selectUpgradesUnlocked = ({ upgrade }) =>
-    upgrade.upgradeList.filter(upgrade => upgrade.isLocked)
+    upgrade.upgrades.list.filter(upgrade => upgrade.isLocked)
 
 export default upgradeSlice.reducer

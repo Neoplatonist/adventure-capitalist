@@ -18,18 +18,26 @@ const mockStore = configureMockStore(middlewares)
 
 describe('industry reducer', () => {
     it('should handle initial state', () => {
-        expect(industry(undefined, {})).toEqual({ industryList: [] })
+        expect(industry(undefined, {})).toEqual({
+            industries: {
+                list: [],
+                error: ''
+            }
+        })
     })
 
     describe('industry actions', () => {
         it('should handle setCurrentCost', () => {
             expect(
                 industry({
-                    industryList: [{
-                        name: 'Farmland',
-                        cost: 1,
-                        currentCost: 1
-                    }]
+                    industries: {
+                        list: [{
+                            name: 'Farmland',
+                            cost: 1,
+                            currentCost: 1
+                        }],
+                        error: ''
+                    }
                 }, {
                     type: setCurrentCost.type,
                     payload: {
@@ -38,22 +46,28 @@ describe('industry reducer', () => {
                     }
                 })
             ).toEqual({
-                industryList: [{
-                    name: 'Farmland',
-                    cost: 1,
-                    currentCost: 5
-                }]
+                industries: {
+                    list: [{
+                        name: 'Farmland',
+                        cost: 1,
+                        currentCost: 5
+                    }],
+                    error: ''
+                }
             })
         })
 
         it('should handle setCurrentIncome', () => {
             expect(
                 industry({
-                    industryList: [{
-                        name: 'Farmland',
-                        income: 1,
-                        currentIncome: 1
-                    }]
+                    industries: {
+                        list: [{
+                            name: 'Farmland',
+                            income: 1,
+                            currentIncome: 1
+                        }],
+                        error: ''
+                    }
                 }, {
                     type: setCurrentIncome.type,
                     payload: {
@@ -62,87 +76,114 @@ describe('industry reducer', () => {
                     }
                 })
             ).toEqual({
-                industryList: [{
-                    name: 'Farmland',
-                    income: 1,
-                    currentIncome: 5
-                }]
+                industries: {
+                    list: [{
+                        name: 'Farmland',
+                        income: 1,
+                        currentIncome: 5
+                    }],
+                    error: ''
+                }
             })
         })
 
         it('should handle incNumOwned', () => {
             expect(
                 industry({
-                    industryList: [{
-                        name: 'Farmland',
-                        numberOwned: 1
-                    }]
+                    industries: {
+                        list: [{
+                            name: 'Farmland',
+                            numberOwned: 1
+                        }],
+                        error: ''
+                    }
                 }, {
                     type: incNumOwned.type,
                     payload: 'Farmland'
                 })
             ).toEqual({
-                industryList: [{
-                    name: 'Farmland',
-                    numberOwned: 2
-                }]
+                industries: {
+                    list: [{
+                        name: 'Farmland',
+                        numberOwned: 2
+                    }],
+                    error: ''
+                }
             })
         })
 
         it('should handle lockBuy', () => {
             expect(
                 industry({
-                    industryList: [{
-                        name: 'Farmland',
-                        isContribLocked: false
-                    }]
+                    industries: {
+                        list: [{
+                            name: 'Farmland',
+                            isContribLocked: false
+                        }],
+                        error: ''
+                    }
                 }, {
                     type: lockBuy.type,
                     payload: 'Farmland'
                 })
             ).toEqual({
-                industryList: [{
-                    name: 'Farmland',
-                    isContribLocked: true
-                }]
+                industries: {
+                    list: [{
+                        name: 'Farmland',
+                        isContribLocked: true
+                    }],
+                    error: ''
+                }
             })
         })
 
         it('should handle unlockBuy', () => {
             expect(
                 industry({
-                    industryList: [{
-                        name: 'Farmland',
-                        isContribLocked: true
-                    }]
+                    industries: {
+                        list: [{
+                            name: 'Farmland',
+                            isContribLocked: true
+                        }],
+                        error: ''
+                    }
                 }, {
                     type: unlockBuy.type,
                     payload: 'Farmland'
                 })
             ).toEqual({
-                industryList: [{
-                    name: 'Farmland',
-                    isContribLocked: false
-                }]
+                industries: {
+                    list: [{
+                        name: 'Farmland',
+                        isContribLocked: false
+                    }],
+                    error: ''
+                }
             })
         })
 
         it('should handle unlockIndustry', () => {
             expect(
                 industry({
-                    industryList: [{
-                        name: 'Farmland',
-                        isLocked: true
-                    }]
+                    industries: {
+                        list: [{
+                            name: 'Farmland',
+                            isLocked: true
+                        }],
+                        error: ''
+                    }
                 }, {
                     type: unlockIndustry.type,
                     payload: 'Farmland'
                 })
             ).toEqual({
-                industryList: [{
-                    name: 'Farmland',
-                    isLocked: false
-                }]
+                industries: {
+                    list: [{
+                        name: 'Farmland',
+                        isLocked: false
+                    }],
+                    error: ''
+                }
             })
         })
     })
@@ -157,7 +198,10 @@ describe('industry reducer', () => {
             }
 
             const store = mockStore({
-                industryList: industry
+                industries: {
+                    list: [industry],
+                    error: ''
+                }
             })
 
             const expectedActions = [
@@ -174,7 +218,7 @@ describe('industry reducer', () => {
 
         describe('should handle buyIndustry', () => {
             it('numberOwned > 0', () => {
-                let industry = [{
+                let industry = {
                     name: 'Farmland',
                     baseCost: 1,
                     coefficient: 1,
@@ -182,22 +226,28 @@ describe('industry reducer', () => {
                     currentIncome: 1.67,
                     aggregateIncome: 1.67,
                     numberOwned: 1
-                }]
+                }
 
-                let upgrade = [{
+                let upgrade = {
                     name: 'Farmland',
                     multiplier: 3,
                     isLocked: true,
                     cost: 250000,
                     secCounter: 0
-                }]
+                }
 
                 const store = mockStore({
                     industry: {
-                        industryList: industry
+                        industries: {
+                            list: [industry],
+                            error: ''
+                        }
                     },
                     upgrade: {
-                        upgradeList: upgrade
+                        upgrades: {
+                            list: [upgrade],
+                            error: ''
+                        }
                     }
                 })
 
@@ -214,12 +264,12 @@ describe('industry reducer', () => {
                     }
                 ]
 
-                store.dispatch(buyIndustry(industry[0]))
+                store.dispatch(buyIndustry(industry))
                 expect(store.getActions()).toEqual(expectedActions)
             })
 
             it('numberOwned == 0', () => {
-                let industry = [{
+                let industry = {
                     name: 'Farmland',
                     coefficient: 1.07,
                     income: 1.67,
@@ -232,22 +282,28 @@ describe('industry reducer', () => {
                     wait: 1000,
                     isLocked: false,
                     isContribLocked: false
-                }]
+                }
 
-                let upgrade = [{
+                let upgrade = {
                     name: 'Farmland',
                     multiplier: 3,
                     isLocked: true,
                     cost: 250000,
                     secCounter: 0
-                }]
+                }
 
                 const store = mockStore({
                     industry: {
-                        industryList: industry
+                        industries: {
+                            list: [industry],
+                            error: ''
+                        }
                     },
                     upgrade: {
-                        upgradeList: upgrade
+                        upgrades: {
+                            list: [upgrade],
+                            error: ''
+                        }
                     }
                 })
 
@@ -265,7 +321,7 @@ describe('industry reducer', () => {
                     { type: unlockIndustry.type, payload: 'Farmland' }
                 ]
 
-                store.dispatch(buyIndustry(industry[0]))
+                store.dispatch(buyIndustry(industry))
                 expect(store.getActions()).toEqual(expectedActions)
             })
         })

@@ -1,32 +1,30 @@
 main {
-  flex-grow: 1;
-  width: 60%;
-  height: calc(100vh - 10.1rem);
-  justify-content: center;
-  padding: 2rem 0 2rem 0;
-  display: grid;
-  grid-gap: 0.2rem;
-  grid-template-columns: [col1-start] 1fr [col2-start] 1fr [col3-start] 1fr [col4-start] 1fr [col5-end];
-  grid-template-rows: [row1-start] 1fr [row2-start] 1fr [row3-start] 1fr [row4-start] 1fr [row5-start] 1fr [row6-start] 1fr [row7-end];
+  flex: 1 0 auto;
 }
 
-#game-header {
-    grid-column: col2-start / col3-end;
-    grid-row: row1-start / row2-start;
-    background-color: indianred;
-    text-align: center;
-}
-
-#game-industries {
-    text-align: center;
-    grid-column: col2-start / col3-end;
-    grid-row: row2-start / row7-end;
-    background-color: lightblue;
+/* .nav-wrapper {
     display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+} */
+
+.nav-wrapper p {
+    font-size: 1.8rem;
 }
 
-#game-industries>* {
-    flex: 1 1 0;
+.game {
+  background: #8eaeBd;
+  /* height: 80vh; */
+}
+
+.antimatter {
+  background: #a7B3A5;
+  color: #333;
+  font-weight: bold;
+}
+
+.flex {
+  display: flex;
+  flex-wrap: wrap;
+  /* background: #6D7993; */
 }

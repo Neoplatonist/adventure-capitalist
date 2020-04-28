@@ -23,15 +23,11 @@ class ListItem extends Component {
         return (
             <div>
                 <button
-                    className="list-item-btn"
+                    className="btn-large blue-grey darken-3"
                     onClick={this.handleClick}
                     disabled={this.props.antimatter > cost ? false : true
                     }>
-                    {name}
-
-                    <br />
-
-                    &#9797;{numeral(cost).format('0.00a')}
+                    {name} &#9797;{numeral(cost).format('0.00a')}
                 </button>
             </div>
         )

@@ -7,61 +7,60 @@ class IndustryService {
     async GetAllIndustriesByUsername(username) {
         this.logger.debug('Getting all indutries from the database')
 
-        const findIndustriesForUser = await new Promise(resolve => {
-            // Did not use projections since I need to insert
-            //  industry name property into each industry.
-            this.db.findOne({ username }, (error, doc) => {
-                if (error) {
-                    this.logger.error(error)
-                    resolve({
-                        status: error,
-                        data: []
-                    })
-                }
+        try {
+            const industryList = await new Promise((resolve, reject) => {
+                this.db.findOne({ username }, (error, doc) => {
+                    if (error) {
+                        return reject({ status: 404, message: error })
+                    }
 
-                if (doc === null) {
-                    this.logger.error('user not found')
-                    resolve({
-                        status: 'user not found',
-                        data: []
-                    })
-                } else {
-                    resolve({
-                        status: 'ok',
-                        data: doc.dataSheet.reduce((prev, curr) => {
-                            return [...prev, { name: curr.name, ...curr.industry }]
-                        }, [])
-                    })
-                }
+                    if (doc == null) {
+                        return reject({ status: 404, message: 'user not found' })
+                    }
+
+                    // convert industry datasheet
+                    const industries = doc.dataSheet.reduce((prev, curr) => {
+                        return [...prev, { name: curr.name, ...curr.industry }]
+                    }, [])
+
+                    return resolve(industries)
+                })
             })
-        })
 
-        return findIndustriesForUser
+            return industryList
+        } catch (error) {
+            this.logger.error('GetAllIndustriesByUsername error: %o', error)
+            throw error
+        }
     }
 
     async UpdateIndustryByName(userObj) {
         this.logger.debug('Updating industry db record for specified user')
 
-        const updateUser = await new Promise(resolve => {
-            this.db.update(
-                { username: userObj.name },
-                {
-                    $set: {
-                        antimatter: userObj.antimatter,
-                        timeStamp: userObj.timeStamp
-                    }
-                },
-                (error, doc) => {
-                    if (error) {
-                        this.logger.error(error)
-                        resolve({ status: error })
-                    }
+        try {
+            const updateUser = await new Promise((resolve, reject) => {
+                this.db.update(
+                    { username: userObj.name },
+                    {
+                        $set: {
+                            antimatter: userObj.antimatter,
+                            timeStamp: userObj.timeStamp
+                        }
+                    },
+                    (error, doc) => {
+                        if (error) {
+                            reject({ status: 404, message: error })
+                        }
 
-                    resolve({ status: 'ok' })
-                })
-        })
+                        resolve(doc)
+                    })
+            })
 
-        return updateUser
+            return updateUser
+        } catch (error) {
+            this.logger.error('UpdateIndustryByName error: %o', error)
+            throw error
+        }
     }
 }
 

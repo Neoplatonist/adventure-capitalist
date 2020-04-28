@@ -5,7 +5,7 @@ let expressLoader = require('./express'),
 
 module.exports = async (app) => {
     await dependencyInjectorLoader({
-        dbConnection: await dbLoader(),
+        dbConnection: dbLoader(),
         models: []
     })
 

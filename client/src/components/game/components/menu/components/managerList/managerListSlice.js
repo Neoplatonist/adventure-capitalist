@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import axios from 'axios'
 import { getIndexByName } from '../../../../../../gameUtility'
 import { incIndustryContribByName, setIsManaged } from '../../../industry/industrySlice'
 import { decAntimatterAsync } from '../../../../gameSlice'
@@ -9,20 +10,11 @@ export const fetchManagers = createAsyncThunk(
     'manager/fetchManagers',
     async (thunkAPI) => {
         try {
-            let response = await fetch('http://localhost:3001/api/v1/managers')
-            console.log('managerFetch', response)
+            let manager = await axios.get('http://localhost:3001/api/v1/managers')
 
-            // check for response.status
-            if (!response.ok) {
-                throw new Error(response.statusText)
-            }
-
-            let { data } = await response.json()
-            console.log('managerSlice data: ', data)
-
-            return data
+            return { list: manager.data, error: '' }
         } catch (error) {
-            console.error(error)
+            return { list: [], error: error.message }
         }
     }
 )
@@ -32,21 +24,27 @@ export const fetchManagers = createAsyncThunk(
 export const managerSlice = createSlice({
     name: 'manager',
     initialState: {
-        managerList: []
+        managers: {
+            list: [],
+            error: ''
+        }
     },
     reducers: {
         unlockManager: (state, action) => {
-            let index = getIndexByName(state.managerList, action.payload)
-            state.managerList[index].isLocked = false
+            let index = getIndexByName(state.managers.list, action.payload)
+            state.managers.list[index].isLocked = false
         },
         updateManagerSecCounter: (state, action) => {
-            let index = getIndexByName(state.managerList, action.payload)
-            state.managerList[index].secCounter++
+            let index = getIndexByName(state.managers.list, action.payload)
+            state.managers.list[index].secCounter++
         },
     },
     extraReducers: {
         [fetchManagers.fulfilled]: (state, action) => {
-            state.managerList = action.payload
+            state.managers = action.payload
+        },
+        [fetchManagers.rejected]: (state, action) => {
+            state.managers = action.payload
         }
     }
 })
@@ -63,11 +61,11 @@ export const {
 
 // Handles initializing manager data when the app first launches.
 export const setupManager = () => (dispatch, getState) => {
-    if (getState().manager.managerList.length === 0) {
+    if (getState().manager.managers.list.length === 0) {
         dispatch(fetchManagers())
     }
 
-    getState().manager.managerList.forEach(manager => {
+    getState().manager.managers.list.forEach(manager => {
         if (!manager.isLocked) {
             dispatch(incIndustryContribByName(manager.name))
             dispatch(updateManagerSecCounter(manager.name))
@@ -85,7 +83,7 @@ export const startManager = ({ cost, name }) => (dispatch) => {
 
 // Keeps track of the manager mutex and timer for each individual manager.
 export const updateManager = () => (dispatch, getState) => {
-    getState().manager.managerList.forEach(manager => {
+    getState().manager.managers.list.forEach(manager => {
         if (!manager.isLocked) {
             dispatch(incIndustryContribByName(manager.name))
             dispatch(updateManagerSecCounter(manager.name))
@@ -98,11 +96,11 @@ export const updateManager = () => (dispatch, getState) => {
 
 // Creates a view of locked managers to be purchased.
 export const selectManagersLocked = ({ manager }) =>
-    manager.managerList.filter(manager => manager.isLocked)
+    manager.managers.list.filter(manager => manager.isLocked)
 
 // Creates a view of unlocked managers already purchased.
 export const selectManagersUnlocked = ({ manager }) =>
-    manager.managerList.filter(manager => manager.isLocked)
+    manager.managers.list.filter(manager => manager.isLocked)
 
 
 export default managerSlice.reducer

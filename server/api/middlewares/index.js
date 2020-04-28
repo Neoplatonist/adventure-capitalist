@@ -1,5 +1,5 @@
-let session = require('./session')
+const validate = require('./auth')
 
 module.exports = {
-    session
+    validate
 }

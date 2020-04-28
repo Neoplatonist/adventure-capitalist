@@ -4,8 +4,11 @@ import { connect } from 'react-redux'
 import numeral from 'numeral'
 import { setupGame, updateAll } from './gameSlice'
 import { selectManagedIndustries } from './components/industry/industrySlice'
+import LoginModal from '../loginModal'
+import StatsModal from '../statsModal'
 import Industry from './components/industry'
 import Menu from './components/menu'
+import M from 'materialize-css'
 import './game.css'
 
 class Game extends Component {
@@ -15,13 +18,34 @@ class Game extends Component {
         // Sets how often the gameloop updates the event timers
         this.gameLoopInterval = 1000
         this.gameLoopTimeStamp = 0
+
+        this.state = {
+            loop: false,
+            loginModal: true,
+            showStats: false,
+        }
     }
 
     componentDidMount() {
-        // check the timestamp vs now and calculate the money
-        // made over the period of time of being away
-        this.props.setupGame()
-        this.startLoop()
+        if (localStorage.getItem('jwt_token') && !this.state.loop) {
+            this.props.setupGame()
+            this.startLoop()
+
+            let showStats = false
+            if (((new Date() / 1000) - this.props.timeStamp) > 5) {
+                showStats = true
+            }
+
+            this.setState({ loop: true, loginModal: false, showStats })
+        }
+    }
+
+    componentDidUpdate() {
+        if (localStorage.getItem('jwt_token') && !this.state.loop) {
+            this.props.setupGame()
+            this.startLoop()
+            this.setState({ loop: true })
+        }
     }
 
     componentWillUnmount() {
@@ -35,8 +59,7 @@ class Game extends Component {
     }
 
     loop = (timeStamp) => {
-        //Calculate the number of seconds passed
-        //  since the last frame.
+        // Calculate the number of seconds passed since the last frame.
         const glSecondsPassed = (timeStamp - this.gameLoopTimeStamp)
 
         if (this.gameLoopTimeStamp === 0) {
@@ -45,7 +68,6 @@ class Game extends Component {
         }
 
         if (glSecondsPassed >= this.gameLoopInterval) {
-            console.log('game loop')
             this.props.updateAll()
             this.gameLoopTimeStamp = timeStamp
         }
@@ -68,21 +90,58 @@ class Game extends Component {
         })
     }
 
+    // possibly create a second state renderModal
+    renderLoginModal() {
+        if (this.state.loginModal) {
+            if (localStorage.getItem('jwt_token')) {
+                // check if element is already rendered
+                const elem = document.querySelector('#modal1')
+                if (typeof (elem) != 'undefined' && elem != null) {
+                    const instance = M.Modal.getInstance(elem)
+                    instance.close()
+
+                    this.setState({ loginModal: false })
+                }
+                return false
+            }
+
+            return true
+        } else {
+            return false
+        }
+    }
+
+
     render() {
-        const { antimatter, industryList } = this.props
+        const { antimatter, industryList, username } = this.props
 
         return (
-            <main>
-                <header id="game-header">
-                    <h1>&#9797;{'Antimatter: ' + numeral(antimatter).format('0.00a')}</h1>
-                </header>
+            <div className="game container">
+                {this.renderLoginModal() ? <LoginModal /> : null}
 
-                <Menu />
+                <div className="row">
+                    <nav className="nav-wrapper">
+                        <p className="antimatter center">
+                            &#9797;{'Antimatter: ' + numeral(antimatter).format('0.00a')}
+                        </p>
 
-                <article id="game-industries">
-                    {industryList.length === 0 ? 'Loading...' : this.getIndustries()}
-                </article>
-            </main>
+                        <p>
+                            {this.state.showStats ? <StatsModal /> : null}
+                        </p>
+                    </nav>
+
+                    <div className="row">
+                        <Menu />
+
+                        <article className="col s12 m8 l9 flex">
+                            <div className="row">
+                                {industryList.length === 0 && username ?
+                                    'Loading...' : this.getIndustries()}
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
         )
     }
 }
@@ -110,8 +169,10 @@ Game.propTypes = {
 
 const mapStateToProps = state => ({
     antimatter: state.game.antimatter,
-    industryList: state.industry.industryList,
-    managedIndustries: selectManagedIndustries(state)
+    industryList: state.industry.industries.list,
+    managedIndustries: selectManagedIndustries(state),
+    timeStamp: state.game.timeStamp,
+    username: state.game.user.name
 })
 
 const mapDispatchToProps = {

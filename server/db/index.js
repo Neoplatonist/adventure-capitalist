@@ -1,5 +1,5 @@
 // Static initial state
-let dataSheet = [
+const dataSheet = [
     {
         name: 'Farmland',
         'industry': {

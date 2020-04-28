@@ -1,6 +1,8 @@
 let express = require('express'),
     { Container } = require('typedi'),
-    ManagerService = require('../../services/manager')
+    ManagerService = require('../../services/manager'),
+    middleware = require('../middlewares'),
+    jwt = require('jsonwebtoken')
 
 const route = express.Router()
 
@@ -9,20 +11,18 @@ module.exports = async (app) => {
 
     route.get(
         '/',
-        async (req, res) => {
+        middleware.validate,
+        async (req, res, next) => {
             const logger = Container.get('logger')
-            logger.debug('/managers')
+            logger.debug('/managers GET')
 
             try {
+                const { username } = jwt.decode(req.headers['authorization'].split(' ')[1])
                 const managerServiceInstance = new ManagerService(Container)
-                const response = await managerServiceInstance
-                    .GetAllManagersByUsername(req.sessionID)
+                const managerList = await managerServiceInstance
+                    .GetAllManagersByUsername(username)
 
-                if (response.status !== 'ok') {
-                    return res.json(response).status(401)
-                }
-
-                return res.json(response).status(200)
+                return res.status(200).json(managerList)
             } catch (error) {
                 logger.error('error: %o', error)
                 return next(error)

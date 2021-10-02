@@ -1,84 +1,84 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import numeral from 'numeral'
-import { setupGame, updateAll } from './gameSlice'
-import { selectManagedIndustries } from './components/industry/industrySlice'
-import LoginModal from '../loginModal'
-import StatsModal from '../statsModal'
-import Industry from './components/industry'
-import Menu from './components/menu'
-import M from 'materialize-css'
-import './game.css'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import numeral from 'numeral';
+import { setupGame, updateAll } from './gameSlice';
+import { selectManagedIndustries } from './components/industry/industrySlice';
+import LoginModal from '../loginModal';
+import StatsModal from '../statsModal';
+import Industry from './components/industry';
+import Menu from './components/menu';
+import M from 'materialize-css';
+import './game.css';
 
 class Game extends Component {
     constructor() {
-        super()
+        super();
 
         // Sets how often the gameloop updates the event timers
-        this.gameLoopInterval = 1000
-        this.gameLoopTimeStamp = 0
+        this.gameLoopInterval = 1000;
+        this.gameLoopTimeStamp = 0;
 
         this.state = {
             loop: false,
             loginModal: true,
             showStats: false,
-        }
+        };
     }
 
     componentDidMount() {
         if (localStorage.getItem('jwt_token') && !this.state.loop) {
-            this.props.setupGame()
-            this.startLoop()
+            this.props.setupGame();
+            this.startLoop();
 
-            let showStats = false
+            let showStats = false;
             if (((new Date() / 1000) - this.props.timeStamp) > 5) {
-                showStats = true
+                showStats = true;
             }
 
-            this.setState({ loop: true, loginModal: false, showStats })
+            this.setState({ loop: true, loginModal: false, showStats });
         }
     }
 
     componentDidUpdate() {
         if (localStorage.getItem('jwt_token') && !this.state.loop) {
-            this.props.setupGame()
-            this.startLoop()
-            this.setState({ loop: true })
+            this.props.setupGame();
+            this.startLoop();
+            this.setState({ loop: true });
         }
     }
 
     componentWillUnmount() {
-        this.stopLoop()
+        this.stopLoop();
     }
 
     startLoop() {
         if (!this._frameId) {
-            this._frameId = window.requestAnimationFrame(this.loop)
+            this._frameId = window.requestAnimationFrame(this.loop);
         }
     }
 
     loop = (timeStamp) => {
         // Calculate the number of seconds passed since the last frame.
-        const glSecondsPassed = (timeStamp - this.gameLoopTimeStamp)
+        const glSecondsPassed = (timeStamp - this.gameLoopTimeStamp);
 
         if (this.gameLoopTimeStamp === 0) {
-            this.gameLoopTimeStamp = timeStamp
-            this.saveTimeStamp = timeStamp
+            this.gameLoopTimeStamp = timeStamp;
+            this.saveTimeStamp = timeStamp;
         }
 
         if (glSecondsPassed >= this.gameLoopInterval) {
-            this.props.updateAll()
-            this.gameLoopTimeStamp = timeStamp
+            this.props.updateAll();
+            this.gameLoopTimeStamp = timeStamp;
         }
 
         // Set up next iteration of the loop
-        this._frameId = window.requestAnimationFrame(this.loop)
-    }
+        this._frameId = window.requestAnimationFrame(this.loop);
+    };
 
     stopLoop() {
         // cancelAnimationFrame() won't throw an error
-        window.cancelAnimationFrame(this._frameId)
+        window.cancelAnimationFrame(this._frameId);
     }
 
 
@@ -86,8 +86,8 @@ class Game extends Component {
         return this.props.industryList.map(industry => {
             return <Industry
                 key={'industry-' + industry.name}
-                industry={industry} />
-        })
+                industry={industry} />;
+        });
     }
 
     // possibly create a second state renderModal
@@ -95,25 +95,25 @@ class Game extends Component {
         if (this.state.loginModal) {
             if (localStorage.getItem('jwt_token')) {
                 // check if element is already rendered
-                const elem = document.querySelector('#modal1')
+                const elem = document.querySelector('#modal1');
                 if (typeof (elem) != 'undefined' && elem != null) {
-                    const instance = M.Modal.getInstance(elem)
-                    instance.close()
+                    const instance = M.Modal.getInstance(elem);
+                    instance.close();
 
-                    this.setState({ loginModal: false })
+                    this.setState({ loginModal: false });
                 }
-                return false
+                return false;
             }
 
-            return true
+            return true;
         } else {
-            return false
+            return false;
         }
     }
 
 
     render() {
-        const { antimatter, industryList, username } = this.props
+        const { antimatter, industryList, username } = this.props;
 
         return (
             <div className="game container">
@@ -125,9 +125,9 @@ class Game extends Component {
                             &#9797;{'Antimatter: ' + numeral(antimatter).format('0.00a')}
                         </p>
 
-                        <p>
+                        <div>
                             {this.state.showStats ? <StatsModal /> : null}
-                        </p>
+                        </div>
                     </nav>
 
                     <div className="row">
@@ -142,7 +142,7 @@ class Game extends Component {
                     </div>
                 </div>
             </div>
-        )
+        );
     }
 }
 
@@ -159,13 +159,13 @@ const industryType = PropTypes.arrayOf(
         isLocked: PropTypes.bool.isRequired,
         isContribLocked: PropTypes.bool.isRequired,
     })
-).isRequired
+).isRequired;
 
 Game.propTypes = {
     antimatter: PropTypes.number.isRequired,
     industryList: industryType,
     managedIndustries: industryType
-}
+};
 
 const mapStateToProps = state => ({
     antimatter: state.game.antimatter,
@@ -173,11 +173,11 @@ const mapStateToProps = state => ({
     managedIndustries: selectManagedIndustries(state),
     timeStamp: state.game.timeStamp,
     username: state.game.user.name
-})
+});
 
 const mapDispatchToProps = {
     setupGame,
     updateAll
-}
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(Game)
+export default connect(mapStateToProps, mapDispatchToProps)(Game);

@@ -23,6 +23,7 @@ The Tech Stack is:
 - Redux
 - Thunk
 - Reselect
+- Material UI
 
 The approach was more event-driven than using a game loop.
 
